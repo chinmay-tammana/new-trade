@@ -1,0 +1,39 @@
+# Secrets and environment
+.env
+.env.*
+!.env.example
+
+# Market data and caches
+data/
+*.parquet
+*.parquet.*
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# OS artifacts
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+
+# Editor configs
+.vscode/
+.idea/
+*.swp
+*~
