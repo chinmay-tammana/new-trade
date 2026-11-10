@@ -100,33 +100,33 @@ Earlier 2-year run: test set 587 eligible hourly candles; 114 Up signals, 0 Down
   - [x] Secret check on entire git tree and history verified (0 secrets, 0 data files tracked)
   - [x] Phase 9 committed and pushed
 
-- [ ] **Phase 10: Documentation, Report, Slides, Freeze**
-  - [ ] Architecture diagram generated (`results/figures/architecture.png`)
-  - [ ] Algorithm specification written (`docs/algorithm.md`)
-  - [ ] Complete technical report written (`report/report.md`)
-  - [ ] Slide deck outline written (`slides/outline.md`)
-  - [ ] Trader user guide written (`docs/user_guide.md`)
-  - [ ] Top-level `README.md` complete with reproduction commands
-  - [ ] Artifacts frozen and committed
-  - [ ] Release tagged as `model-v1` and tag pushed
-  - [ ] Final summary printed
+- [x] **Phase 10: Documentation, Report, Slides, Freeze**
+  - [x] Architecture diagram generated (`results/figures/architecture.png`)
+  - [x] Algorithm specification written (`docs/algorithm.md`)
+  - [x] Complete technical report written (`report/report.md`)
+  - [x] Slide deck outline written (`slides/outline.md`)
+  - [x] Trader user guide written (`docs/user_guide.md`)
+  - [x] Top-level `README.md` complete with reproduction commands
+  - [x] Artifacts frozen and committed
+  - [x] Release tagged as `model-v1` and tag pushed
+  - [x] Final summary printed
 
 ---
 
 ## Final IMPACT Completion Checklist
 
-- [ ] 1. Problem and metrics defined (with pre-registered criteria)
-- [ ] 2. Literature and gap documented with verified citations
-- [ ] 3. Dataset source and licence recorded in dataset card
-- [ ] 4. Data audit and EDA completed (Base-only EDA)
-- [ ] 5. Leak-free split and pipeline verified (no look-ahead, 8-bar gaps)
-- [ ] 6. Simple baselines established on identical validation set
-- [ ] 7. Models tuned using walk-forward validation only
-- [ ] 8. Held-out evaluation completed strictly once on Test
-- [ ] 9. Results and failures honestly interpreted with statistical intervals
-- [ ] 10. Seeds, versions, hardware, and exact commands recorded
-- [ ] 11. Code, report, and slides organised without placeholders
-- [ ] 12. Limitations, ethical considerations, and paper trading scope included
+- [x] 1. **Problem and metrics defined (with pre-registered criteria)**: Defined in `docs/problem_definition.md` with explicit criteria C1–C6 (Log-loss, Accuracy, Net return, ECE, Directional balance, Integrity).
+- [x] 2. **Literature and gap documented with verified citations**: Documented in `docs/literature_survey.md` with real papers (Fama 1970, Malkiel 2003, Gu et al. 2020, De Prado 2018, Guo et al. 2017) and structured comparison table.
+- [x] 3. **Dataset source and licence recorded in dataset card**: Documented in `docs/dataset_card.md` and `docs/data_dictionary.md` covering Alpaca SIP source, licensing terms, and schemas.
+- [x] 4. **Data audit and EDA completed (Base-only EDA)**: Verified in `src/audit.py` (0 NaNs, 0 zero vol, 0.999998 yfinance parity corr) and `src/eda.py` (Base-only EDA plots, KS drift analysis in `docs/eda_findings.md`).
+- [x] 5. **Leak-free split and pipeline verified (no look-ahead, 8-bar gaps)**: Implemented in `src/split.py` with 8-bar embargoes. Causal truncation test (50 cutoffs, max diff 0.00e+00) and in-fold Winsorizer/StandardScaler verified.
+- [x] 6. **Simple baselines established on identical validation set**: Constant Prior (loss 0.69178), Always-Up (53.16%), RSI heuristic (49.83%), and Persistence (45.02%) evaluated in `src/baselines.py` and saved to `results/tables/baselines_val.csv`.
+- [x] 7. **Models tuned using walk-forward validation only**: 4-fold walk-forward cross-validation (40 configs) executed on FT block in `src/finetune.py`. Best strategy S2 (Refit Base+FT) beat Constant Prior on Val (loss 0.68953 vs 0.69178).
+- [x] 8. **Held-out evaluation completed strictly once on Test**: Executed in `src/evaluate.py`. Test block read strictly once with frozen models and thresholds; predictions locked to `results/tables/test_predictions.csv`.
+- [x] 9. **Results and failures honestly interpreted with statistical intervals**: Reported in `RESULTS.md` and `report/report.md` with 95% Wilson CIs (accuracy 46.28% [39.30%, 53.41%]) and block-bootstrap CIs (net return -7.24 bps [-13.90, -0.02] bps).
+- [x] 10. **Seeds, versions, hardware, and exact commands recorded**: Recorded in `results/logs/environment.json`, `configs/config.py` (seed 42), `requirements.txt`, and executable `run_all.sh`.
+- [x] 11. **Code, report, and slides organised without placeholders**: Complete implementation with zero TODOs or placeholders across `src/`, `docs/`, `report/report.md` (10 sections), and `slides/outline.md` (15 slides).
+- [x] 12. **Limitations, ethical considerations, and paper trading scope included**: Thoroughly documented in `report/report.md`, `docs/user_guide.md`, and `README.md` (educational scope, paper trading only, not financial advice, licensing compliance).
 
 ---
 
@@ -136,4 +136,5 @@ Earlier 2-year run: test set 587 eligible hourly candles; 114 Up signals, 0 Down
 - *Workspace*: Fresh workspace at `/Users/chinmay/Desktop/trade final`.
 - *Python Environment*: Target Python 3.11.18 located at `/opt/homebrew/bin/python3.11`.
 - *Phase 9 Integrity*: All 6 integrity tests passed. Shuffled-label null accuracy is 50.50% (proving zero label leakage). Lagged feature shift increases loss by +0.00450. Fit ledger confirms all 19 model fits completed prior to Val start timestamp (2025-11-10 11:30:00-05:00). Live window test confirms 300+ bars are sufficient for full EMA convergence (500 bars yields < 1e-11 diff). Git history scan confirms zero secrets or parquet files tracked.
+- *Phase 10 Documentation & Freeze*: Architecture diagram generated at `results/figures/architecture.png`. Formal algorithm specification written in `docs/algorithm.md`. 10-section IMPACT report authored in `report/report.md`. 15-slide technical outline created in `slides/outline.md`. Complete trader user guide created in `docs/user_guide.md`. Top-level `README.md` complete with architecture diagram, results scorecard, and reproduction instructions. Model artifacts frozen and tagged as `model-v1`.
 - *Earlier 2-year run*: No prior files existed in directory; documented the motivating result from prior 2-year run per instructions.
