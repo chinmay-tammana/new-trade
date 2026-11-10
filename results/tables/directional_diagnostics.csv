@@ -1,0 +1,15 @@
+metric,value
+Base Block Label Up-rate,0.5139
+FT Block Label Up-rate,0.5290
+Val Block Label Up-rate,0.5316
+Base Mean Calibrated P(Up),0.5356
+FT Mean Calibrated P(Up),0.5347
+Val Mean Calibrated P(Up),0.5316
+Val Calibrated P Std,0.0376
+Val Calibrated P Min,0.4192
+Val Calibrated P 5th percentile,0.4720
+Val Calibrated P 25th percentile,0.5070
+Val Calibrated P 50th percentile (Median),0.5304
+Val Calibrated P 75th percentile,0.5517
+Val Calibrated P 95th percentile,0.5980
+Val Calibrated P Max,0.6803

@@ -64,13 +64,13 @@ Earlier 2-year run: test set 587 eligible hourly candles; 114 Up signals, 0 Down
   - [x] `results/tables/finetune_report.md` written
   - [x] Phase 5 committed and pushed
 
-- [ ] **Phase 6: Calibration and Signal Rule**
-  - [ ] Platt scaling vs Isotonic calibration fitted on Val in `src/calibrate.py`
-  - [ ] Reliability diagram and Brier / ECE computed before/after
-  - [ ] Directional diagnostics evaluated and saved (`results/tables/directional_diagnostics.csv`)
-  - [ ] Joint grid search for asymmetric margins `(d_up, d_down)` on Val
-  - [ ] Calibrator and signal rule frozen in `models/calib.joblib`
-  - [ ] Phase 6 committed and pushed
+- [x] **Phase 6: Calibration and Signal Rule**
+  - [x] Platt scaling vs Isotonic calibration fitted on Val in `src/calibrate.py` (Platt chosen: ECE 0.0105, log-loss 0.68704)
+  - [x] Reliability diagram and Brier / ECE computed before/after (`results/figures/calibration_reliability.png`)
+  - [x] Directional diagnostics evaluated and saved (`results/tables/directional_diagnostics.csv`)
+  - [x] Joint grid search for asymmetric margins `(d_up, d_down)` on Val (selected Up-only with d_up=0.06; best symmetric d_up=d_down=0.015 reported)
+  - [x] Calibrator and signal rule frozen in `models/calib.joblib` (119 Up, 0 Down, 483 No-signal on Val; 61.34% accuracy)
+  - [x] Phase 6 committed and pushed
 
 - [ ] **Phase 7: Final Evaluation (Once)**
   - [ ] Held-out Test block read exactly ONCE in `src/evaluate.py`
