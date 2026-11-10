@@ -1,0 +1,11 @@
+model,val_score,test_score,train_time_s,size_kb
+Constant Prior,0.69178,0.6941533311808745,0.0,0.0
+Always-Up,-,-,0.0,0.0
+Majority Class (Base),-,-,0.0,0.0
+"RSI Heuristic (<40 Up, >60 Down)",-,-,0.0,0.0
+Previous-Bar Persistence,-,-,0.0,0.0
+LogisticRegression,0.69109,0.69471,-,3.3
+RandomForest,0.69092,0.69488,-,174.8
+HistGradientBoosting,0.69276,0.69479,-,98.5
+Base XGBoost (S0),0.70176,0.72233,-,229.0
+Proposed (XGBoost S2 Calibrated),0.68704,0.70027,0.35,296.2

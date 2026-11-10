@@ -113,6 +113,71 @@ Earlier 2-year run: test set 587 eligible hourly candles; 114 Up signals, 0 Down
 
 ---
 
+## V2 UPGRADE (instructions/10_v2_upgrade.md)
+
+- [x] **V2.0: Setup & Archiving**
+  - [x] Save prompt verbatim as `instructions/10_v2_upgrade.md`
+  - [x] Update `AGENTS.md` (read `10_v2_upgrade.md` last, overrides earlier files)
+  - [x] Tag commit `v1-negative-result` and push tag
+  - [x] Copy v1 outputs to `archive/v1_four_year_run/`
+  - [x] Record v1 result and causes in `progress.md`
+  - [x] Commit and push V2.0 setup
+
+- [ ] **V2.1: Data Expansion & Ingestion**
+  - [ ] Print system date/time and diagnose why v1 ended at 2025-10-15
+  - [ ] Re-run Alpaca availability test on recent dates (verify SIP data)
+  - [ ] Extend history to 8 years (Nov 2018 onward, 30 buffer days, monthly resumable chunks)
+  - [ ] Add context symbols: SPY, XLF, JPM, MS, BAC, TLT, VIXY; resample to 1h; drop symbols losing >2% GS bars
+  - [ ] Drop incomplete bars; save `data_end` to `configs/data_freeze.json`; set `freeze_date` and `test_day` in `configs/config.py`
+  - [ ] Re-run audit; update dataset card & data dictionary
+
+- [ ] **V2.2: Rich Causal Feature Engineering**
+  - [ ] Peers, rates, vol features (JPM, MS, BAC, TLT, VIXY returns, gs_minus_peers, xlf-relative)
+  - [ ] Intrabar features from 1-min bars (realized_vol_1m, up_minute_ratio, clv, signed_volume_ratio, last15_ret)
+  - [ ] Levels and trend features (dist_prev_close/high/low in ATR units, dist_session_vwap, ret_1d/5d/20d, ma_dist_50h/200h, efficiency_ratio_20, bars_since_open/close)
+  - [ ] Organize `FEATURE_GROUPS` dict for group ablations
+  - [ ] Document live 1m requirements and SIP vs IEX differences in `docs/`
+  - [ ] Pass causal truncation test for all new features
+
+- [ ] **V2.3: Multi-Horizon Targets & Insight Heads**
+  - [ ] Direction heads: H1 (1h), H3 (3h same day), HD (rest of day); decisive thresholds scale with sqrt(bars)
+  - [ ] Insight head: VOL (XGB regressor on log((high-low)/close), High/Normal/Low terciles vs persistence & EWMA)
+  - [ ] Insight head: BAND (Quantile regression q=0.10, 0.90 for return, coverage & width vs constant-width baseline)
+  - [ ] Insight head: REGIME (Uptrend/Downtrend/Chop from ret_20d & efficiency_ratio_20)
+  - [ ] Pre-register primary direction horizon selection rule (highest Wilson 95% lower bound on pooled OOF with >=150 signals/side and >=20% coverage)
+
+- [ ] **V2.4: Walk-Forward OOF Evaluation Protocol & Holdout**
+  - [ ] Define Research Holdout: 2025-10-16 to freeze_date (8-bar gap after pre-holdout; read ONCE)
+  - [ ] Implement quarterly walk-forward OOF (initial 2 years, refit every 63 trading days with 8-bar gap)
+  - [ ] Hyperparameter search (n_iter 30) on pre-holdout OOF; recency half-life sweep {90, 180, 365 days, none}; warm-start 12m comparison
+  - [ ] Candidate tournament on pre-holdout OOF: shallow XGBoost, HistGradientBoosting, Elastic-Net Logistic, Ensemble
+  - [ ] Feature group ablations on pre-holdout OOF log-loss
+  - [ ] Class-balanced Platt scaling on pre-holdout OOF; reliability diagram & ECE overall and per regime
+
+- [ ] **V2.5: Mandatory Two-Sided Signal Rule**
+  - [ ] Quantile thresholds q_lo and q_hi from pooled OOF p_cal over coverage c in {0.15, 0.20, 0.25, 0.30, 0.40}
+  - [ ] Select c by Wilson 95% lower bound subject to >=150 signals on EACH side
+  - [ ] Assert n_up >= 150 and n_down >= 150 on OOF; on holdout assert both > 0
+  - [ ] Displayed confidence = p_cal for Up, 1 - p_cal for Down (always >= 50%)
+
+- [ ] **V2.6: Honest Statistics & Pre-Registration**
+  - [ ] Create `docs/problem_definition_v2.md` with pre-registered criteria BEFORE reading holdout
+  - [ ] Compute all-candle always-Up/always-Down, drift-adjusted per side, balanced accuracy, 10k permutation test p-value, regime/calendar breakdowns, net return at 2/5/10 bps with block-bootstrap CI
+
+- [ ] **V2.7: Final Model Refit, Day Replay & Insight Backend**
+  - [ ] Single-read evaluation on Research Holdout
+  - [ ] Refit selected configuration on ALL data up to freeze_date (including holdout); recompute calibrator and q_lo/q_hi; save `model_v2.joblib`, `calib_v2.joblib`
+  - [ ] Build `src/predict_day.py --date YYYY-MM-DD` bar-by-bar day replay with table and plot output
+  - [ ] Build `src/insights.py` reusable inference function
+
+- [ ] **V2.8: Checks, Documentation & GitHub Release**
+  - [ ] Rerun integrity checks: truncation, shuffled-label on OOF, time-shift, ledger audit, live compatibility, synthetic two-sided unit test
+  - [ ] Update all docs, reports, and slides
+  - [ ] Run secret check, commit per phase, push, tag `model-v2` and push tag
+  - [ ] Print final comprehensive summary
+
+---
+
 ## Final IMPACT Completion Checklist
 
 - [x] 1. **Problem and metrics defined (with pre-registered criteria)**: Defined in `docs/problem_definition.md` with explicit criteria C1–C6 (Log-loss, Accuracy, Net return, ECE, Directional balance, Integrity).
@@ -133,6 +198,7 @@ Earlier 2-year run: test set 587 eligible hourly candles; 114 Up signals, 0 Down
 ## Decisions and Assumptions
 
 - *2026-11-10*: Project initialized under IMPACT Lab guidelines.
+- *v1 result*: Val 119 Up / 0 Down, 61.34% (73/119); Test 188 Up / 0 Down / 708 No signal, 46.28% (87/188), Wilson 95% CI [39.30%, 53.41%], always-Up on all test candles 48.88%, net return -7.24 bps per signal at 5 bps. Causes: (a) the Val window (Nov 2024 to Mar 2025) was a rally, so the Val search switched the Down side off and v1 allowed it; (b) the rule was tuned on 602 candles in one regime (selection optimism); (c) 'always-Up on the same candles' is identical to the accuracy of an Up-only rule, so its +0.00% excess was meaningless; (d) data stopped at 2025-10-15.
 - *Workspace*: Fresh workspace at `/Users/chinmay/Desktop/trade final`.
 - *Python Environment*: Target Python 3.11.18 located at `/opt/homebrew/bin/python3.11`.
 - *Phase 9 Integrity*: All 6 integrity tests passed. Shuffled-label null accuracy is 50.50% (proving zero label leakage). Lagged feature shift increases loss by +0.00450. Fit ledger confirms all 19 model fits completed prior to Val start timestamp (2025-11-10 11:30:00-05:00). Live window test confirms 300+ bars are sufficient for full EMA convergence (500 bars yields < 1e-11 diff). Git history scan confirms zero secrets or parquet files tracked.

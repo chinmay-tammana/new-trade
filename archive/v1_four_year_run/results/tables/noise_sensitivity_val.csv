@@ -1,0 +1,4 @@
+noise_level,log_loss,accuracy,delta_logloss
+Baseline (0%),0.68953,0.515,0.0
++10% Gaussian Noise,0.69156,0.5183,0.00203
++25% Gaussian Noise,0.69273,0.5116,0.0032

@@ -1,0 +1,50 @@
+{
+  "N_test_candles": 896,
+  "N_signals": 188,
+  "n_up": 188,
+  "n_down": 0,
+  "n_no_signal": 708,
+  "coverage": 0.20982142857142858,
+  "signal_accuracy": 0.4627659574468085,
+  "wilson_ci_95": [
+    0.39295072536715425,
+    0.5340723483414064
+  ],
+  "always_up_all_test": 0.4888392857142857,
+  "always_up_signal_candles": 0.4627659574468085,
+  "accuracy_minus_always_up_on_signals": 0.0,
+  "log_loss": 0.700267493724823,
+  "brier_score": 0.25350406765937805,
+  "ece_10_bins": 0.04536078843687265,
+  "roc_auc": 0.5000373870909852,
+  "pr_auc": 0.4834286918487408,
+  "precision_up": 0.4627659574468085,
+  "recall_up": 1.0,
+  "f1_up": 0.6327272727272727,
+  "precision_down": 0.0,
+  "recall_down": 0.0,
+  "f1_down": 0.0,
+  "net_return_bps_2": -4.242745101858329,
+  "net_return_bps_5": -7.24274510185833,
+  "net_return_bps_10": -12.24274510185833,
+  "bootstrap_ci_5bps_95": [
+    -13.902848359951598,
+    -0.02415280897125244
+  ],
+  "hit_rate_5bps": 0.40425531914893614,
+  "max_drawdown_bps_5": 1500.60701904065,
+  "seed_variance": {
+    "mean_accuracy": 0.46501968504936875,
+    "std_accuracy": 0.008530749351601787,
+    "mean_logloss": 0.7002871751785278,
+    "std_logloss": 0.0007787235019602197,
+    "mean_net_ret_5bps": -8.309965500935188,
+    "std_net_ret_5bps": 1.4493369137366392,
+    "signals_flipped_across_seeds": 176
+  },
+  "frozen_rule": {
+    "enabled_sides": "up_only",
+    "d_up": 0.05999999999999999,
+    "d_down": null
+  }
+}
