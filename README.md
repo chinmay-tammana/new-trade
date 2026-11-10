@@ -54,8 +54,8 @@ An end-to-end machine learning system developed according to the **IMPACT Lab (I
 | **History Span & Bars** | 4 Years (7,118 bars) | 8 Years (14,000+ bars) | **8 Years (14,084 bars)** | **Complete** |
 | **Feature Dimension** | 22 basic technical features | 51 features in 9 groups | **51 features** (Microstructure, Peers, Levels) | **Complete** |
 | **Validation Architecture**| Single Val block (602 bars) | 20-quarter walk-forward OOF | **20 expanding quarters (12,004 bars)** | **Complete** |
-| **Directional Balance** | 188 Up / 0 Down (Up-only) | Two-sided ($n_{\text{up}}, n_{\text{down}} > 0$) | **888 Up / 786 Down** | **RESOLVED** |
-| **Signal Accuracy** | 46.28% [39.30%, 53.41%] | $\ge 53\%$ with $p < 0.10$ | **52.25% [49.65%, 54.84%]** | **$p = 0.0417$ (Sig.)** |
+| **Signal Counts** | 188 Up / 0 Down (Up-only) | Two-sided ($n_{\text{up}}, n_{\text{down}} > 0$) | **888 Up / 786 Down / 198 No-Sig** (848/574 on labelled) | **RESOLVED** |
+| **Signal Accuracy** | 46.28% [39.30%, 53.41%] | $\ge 53\%$ with $p < 0.10$ | **52.25% (743/1,422) [49.65%, 54.84%]** | **NOT MET (< 53.0%)** |
 | **Drift-Adjusted Edge** | +0.00% vs Up-drift | Both sides beat base rates | **Up +1.59%, Down +3.20%** | **MET (Crit. C)** |
 | **Calibration Error (ECE)**| 0.0454 | $\le 0.050$ | **0.0249** | **MET (Crit. D)** |
 | **Chop Regime Accuracy** | Not segmented | - | **58.30% (Net Return +2.28 bps)** | **Strong Edge** |
@@ -167,3 +167,22 @@ Verification checks include:
 5. Pre-holdout walk-forward ledger audit.
 6. Rolling window live-compatibility test.
 7. Full git history security & parquet scan.
+
+### 4.5 Run V3 Live Trading Dashboard & Server
+```bash
+./run_live.sh
+# or
+python3 -m src.live.server --port 8000
+```
+Open [http://localhost:8000](http://localhost:8000) for the live TradingView Lightweight Charts dashboard, real-time forming candle, and signal telemetry.
+
+Accelerated historical day replay:
+```bash
+python3 -m src.live.server --replay 2026-11-06
+```
+
+### 4.6 Run Live Scoring CLI
+```bash
+python3 -m src.live.score --since 2026-11-10
+```
+Outputs cumulative performance to `results/tables/live_scoreboard.csv` and daily logs to `results/tables/live_{date}.csv`.

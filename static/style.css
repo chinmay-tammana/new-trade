@@ -1,0 +1,275 @@
+/* Clean modern dark quantitative trading interface */
+:root {
+  --bg-primary: #12151c;
+  --bg-card: #1a1e28;
+  --bg-hover: #242938;
+  --border-color: #2e3547;
+  --text-main: #f0f3f8;
+  --text-muted: #8b95a8;
+  --up-color: #26a69a;
+  --down-color: #ef5350;
+  --none-color: #8b95a8;
+  --accent-gold: #f59e0b;
+  --warning-red: #dc2626;
+  --info-blue: #3b82f6;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Header */
+header {
+  height: 56px;
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand h1 {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.ticker-badge {
+  background-color: #2563eb;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.badges-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.badge-live { background-color: rgba(38, 166, 154, 0.2); color: var(--up-color); border: 1px solid var(--up-color); }
+.badge-closed { background-color: rgba(139, 149, 168, 0.2); color: var(--text-muted); border: 1px solid var(--text-muted); }
+.badge-warning { background-color: rgba(239, 83, 80, 0.2); color: var(--down-color); border: 1px solid var(--down-color); }
+.badge-info { background-color: rgba(59, 130, 246, 0.2); color: var(--info-blue); border: 1px solid var(--info-blue); }
+
+/* Main Container */
+main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  height: calc(100vh - 88px);
+  overflow: hidden;
+}
+
+/* Chart Container */
+#chart-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-right: 1px solid var(--border-color);
+  position: relative;
+}
+
+.chart-header {
+  padding: 10px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  background-color: rgba(26, 30, 40, 0.5);
+  font-size: 13px;
+}
+
+#tv-chart {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+}
+
+/* Side Panel */
+#side-panel {
+  background-color: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 16px;
+  gap: 16px;
+}
+
+/* Hero Signal Card */
+.hero-card {
+  background: linear-gradient(145deg, #1e2433, #161a24);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  position: relative;
+}
+
+.direction-title {
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.direction-up { color: var(--up-color); }
+.direction-down { color: var(--down-color); }
+.direction-none { color: var(--none-color); }
+
+.hero-meta {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+.strong-pill {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: var(--accent-gold);
+  color: #12151c;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Warning Banners */
+.banner-alert {
+  background-color: rgba(220, 38, 38, 0.15);
+  border: 1px solid var(--warning-red);
+  color: #fca5a5;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* Metrics Grid */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.metric-box {
+  background-color: #151821;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.metric-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.metric-value {
+  font-size: 15px;
+  font-weight: 700;
+  margin-top: 4px;
+  font-family: var(--font-mono);
+}
+
+/* One-line Disclaimers & Notes */
+.panel-note {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  padding: 8px;
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: 4px;
+  border-left: 3px solid #6366f1;
+}
+
+/* Scoreboard */
+.scoreboard-section h3 {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+/* Signal Log Table */
+.signals-table-container {
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+}
+
+table.signal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  font-family: var(--font-mono);
+}
+
+table.signal-table th {
+  background-color: #151821;
+  padding: 6px 8px;
+  text-align: left;
+  color: var(--text-muted);
+  position: sticky;
+  top: 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+table.signal-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(46, 53, 71, 0.5);
+}
+
+.res-correct { color: var(--up-color); font-weight: bold; }
+.res-wrong { color: var(--down-color); font-weight: bold; }
+.res-pending { color: var(--accent-gold); }
+
+/* Footer */
+footer {
+  height: 32px;
+  background-color: var(--bg-card);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  font-size: 11px;
+  color: var(--text-muted);
+}

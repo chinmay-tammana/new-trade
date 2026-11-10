@@ -127,23 +127,24 @@
 ---
 
 ## Slide 11: Research Holdout Results (Strict Single Read)
-- **Embargoed Holdout Window**: October 16, 2025 to November 9, 2026 (1,872 bars).
-- **Signal Emissions**: 888 Up (47.4%), 786 Down (42.0%), 198 No-Signal (10.6%).
-- **Overall Signal Accuracy**: **`52.25%`** (874 / 1,674).
-- **Statistical Significance**:
-  - Wilson 95% Confidence Interval: **`[49.65%, 54.84%]`**.
-  - **10,000-Shuffle Permutation Test**: **`p = 0.0417`** (Statistically significant at $\alpha = 0.05$).
+- **Embargoed Holdout Window**: October 16, 2025 to November 9, 2026 (1,872 bars total, 1,604 labelled bars).
+- **Signal Emissions on All Bars**: 888 Up (47.4%), 786 Down (42.0%), 198 No-Signal (10.6%).
+- **Signals on Labelled Bars**: 848 Up, 574 Down, 182 No-Signal (1,422 evaluated signals).
+- **Evaluated Signal Accuracy**: **`52.25%`** (743 / 1,422).
+- **Wilson 95% Confidence Interval**: **`[49.65%, 54.84%]`**.
+- **Permutation Test**: **`p = 0.0417`** (10,000 shuffles).
+- **Pre-Registered Criterion B**: **NOT MET** (Accuracy 52.25% < 53.0% threshold).
 - **Calibration on Holdout**: $\text{ECE} = \mathbf{0.0249}$ ($\le 0.05$, Criterion D Met).
 
 ---
 
 ## Slide 12: Drift-Adjusted Performance & Regime Breakdown
-- **Per-Side Performance vs Base Rates**:
-  - **Up Signals**: 51.65% accuracy vs 50.06% period base rate (**`+1.59%`** drift-adjusted edge).
-  - **Down Signals**: 53.14% accuracy vs 49.94% period base rate (**`+3.20%`** drift-adjusted edge).
-  - Both sides independently beat random drift!
+- **Per-Side Performance vs Base Rates (1,604 Labelled Candles)**:
+  - **Up Signals**: 51.65% accuracy (438 / 848) vs 50.06% period base rate (**`+1.59 points`** drift-adjusted edge).
+  - **Down Signals**: 53.14% accuracy (305 / 574) vs 49.94% period base rate (**`+3.20 points`** drift-adjusted edge).
+  - Both sides independently outperform period base rates (Criterion C Met).
 - **Performance by Intraday Regime**:
-  - **Chop Regime**: **`58.30%` accuracy** (446 signals), **`+2.28 bps` net return** after 5 bps friction!
+  - **Chop Regime**: **`58.30%` accuracy** (446 signals), **`+2.28 bps` net return** after 5 bps friction.
   - **Trending Regimes**: 48.41% Uptrend, 52.25% Downtrend (momentum breakouts challenge mean-reversion).
 - **Economic Returns Overall**: Gross return +1.47 bps; Net return at 5 bps friction = -3.53 bps.
 
@@ -184,3 +185,16 @@
 - **Final Model Freeze**:
   - Final models refit on complete 13,884 bars: `models/model_v2.joblib`, `calib_v2.joblib`, `vol_v2.joblib`, `band_v2.joblib`.
   - Pushed to GitHub repository with release tag `model-v2`.
+
+---
+
+## Slide 16: V3 Live Production Architecture & Feed Parity
+- **Production Transition**:
+  - Free SIP feed 15-minute delay necessitates real-time IEX feed for live hourly signals.
+  - 60-day empirical parity test: Direction agreement 97.44% (PASS), but Three-class agreement 72.14% and missing minute bars 31.08% triggered pre-registered fallback.
+  - Frozen models untouched; `live_signals_enabled = False` set by default with clear UI banners.
+- **Deterministic Live Infrastructure**:
+  - Session-anchored calendar (`src/live/calendar.py`) with DST and half-day early close awareness.
+  - Immutable SQLite store (`src/live/store.py`) with WAL mode, abort triggers, and SHA-256 hash chaining.
+  - Read-only FastAPI server (`src/live/server.py`) and zero-dependency TradingView dashboard (`static/`).
+  - Live scoring CLI (`src/live/score.py`) reporting Wilson CIs, base rates, and net returns.

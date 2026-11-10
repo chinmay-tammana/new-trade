@@ -13,6 +13,7 @@ CONFIG = {
     "test_day": "NOT_SPECIFIED",           # TA test day (default: freeze_date is most recent completed trading day)
     "research_holdout_start": "2025-10-16",# First day after v1 data
     "alpaca_feed": "sip",                 # "sip" (default) or "iex"
+    "live_feed": "iex",                   # Live feed: "iex" (real-time, zero delay)
     "alpaca_end_lag_minutes": 20,         # free SIP needs data older than 15 min
     "session_open": "09:30",
     "session_close": "16:00",

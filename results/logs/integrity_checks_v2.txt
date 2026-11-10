@@ -1,5 +1,5 @@
 === V2 INTEGRITY AND REPRODUCIBILITY AUDIT REPORT ===
-Timestamp: 2026-11-11 00:38:37.413115
+Timestamp: 2026-11-11 01:39:30.619191
 
 1. Shuffled-Label Null Test: PASS (Null Acc = 49.49%, Log-Loss = 0.69475)
 2. Time-Shift Sensitivity:   PASS (Delta Log-Loss = +0.00072)

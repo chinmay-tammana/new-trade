@@ -235,3 +235,7 @@ def make_features_v2(
         df = df.iloc[warmup_rows:].copy()
 
     return df
+
+
+# Backward compatibility alias
+make_features = make_features_v2

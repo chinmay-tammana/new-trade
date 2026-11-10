@@ -47,7 +47,7 @@ Before accessing the Research Holdout, five formal criteria were locked into `do
 | Criterion | Description | Target Threshold | Verdict on Holdout |
 | :--- | :--- | :--- | :--- |
 | **Criterion A** | Pre-Holdout Pooled OOF Log-Loss | Beats Constant Prior ($0.69272$) | **MET (0.69279 for Ensemble vs 0.69345 for XGB)** |
-| **Criterion B** | Holdout Signal Counts & Accuracy | $\ge 100$ per side; Acc $\ge 53\%$ with $p < 0.10$ | **PARTIAL**: 888 Up, 786 Down ($\ge 100$), Acc **52.25%**, $p = \mathbf{0.0417}$ |
+| **Criterion B** | Holdout Signal Counts & Accuracy | $\ge 100$ per side; Acc $\ge 53\%$ with $p < 0.10$ | **NOT MET**: 848 Up, 574 Down ($\ge 100$); Acc **52.25%** ($< 53.0\%$), $p = 0.0417$. No edge shown at 53% threshold. |
 | **Criterion C** | Drift-Adjusted Edge per Side | Both Up and Down beat respective base rates | **MET**: Up +1.59% vs base (51.65% vs 50.06%), Down +3.20% vs base (53.14% vs 49.94%) |
 | **Criterion D** | Probability Calibration Quality | Holdout Expected Calibration Error $\le 0.05$ | **MET**: Holdout $\text{ECE} = \mathbf{0.0249}$ |
 | **Criterion E** | Integrity Suite & Causality | Zero leaks, 100% causal checks pass | **MET**: All 7 integrity checks passed |

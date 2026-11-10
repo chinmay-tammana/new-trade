@@ -3,7 +3,7 @@
 Welcome. You are working on the Goldman Sachs (GS) AI trading indicator project following the IMPACT Lab (IIT Patna) End-to-End ML Project Guidelines.
 
 ## Operating Rules
-1. **Read First**: Read `AGENTS.md` first, then every file in `instructions/` in numeric order (`00_rules_and_config.md` through `09_report_slides_freeze.md`) before writing any code. Read `instructions/10_v2_upgrade.md` last; it overrides earlier files.
+1. **Read First**: Read `AGENTS.md` first, then every file in `instructions/` in numeric order (`00_rules_and_config.md` through `09_report_slides_freeze.md`) before writing any code. Read `instructions/10_v2_upgrade.md`, then `instructions/11_v3_live.md` last; it overrides earlier files.
 2. **Work Phase by Phase**: Execute strictly phase by phase in sequential order. Do not skip or reorder phases.
 3. **Phase Check & Logging**: After completing each phase, run its explicit CHECK, save execution logs into `results/logs/`, and run `src/check_secrets.py`.
 4. **Git Commits & Pushes**: Commit after every phase with the message formatted exactly as `phase N: <name>` (e.g., `phase 0: setup`) and push to GitHub (`git push -u origin main` on first push, `git push` subsequently). Follow all GITHUB RULES.

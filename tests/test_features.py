@@ -39,12 +39,15 @@ def test_atr_positivity():
 
 
 def test_make_features_shape_and_columns():
-    df_gs = create_dummy_ohlcv(80, seed=1)
-    df_spy = create_dummy_ohlcv(80, seed=2)
-    df_xlf = create_dummy_ohlcv(80, seed=3)
+    # 20 distinct calendar days in dummy 24h data requires >= 550 bars
+    df_gs = create_dummy_ohlcv(600, seed=1)
+    context_dfs = {
+        sym: create_dummy_ohlcv(600, seed=i+2)
+        for i, sym in enumerate(["SPY", "XLF", "JPM", "MS", "BAC", "TLT", "VIXY"])
+    }
 
-    feat_df = make_features(df_gs, df_spy, df_xlf, warmup_rows=30)
-    assert len(feat_df) == 50
+    feat_df = make_features(df_gs, context_dfs, warmup_rows=500)
+    assert len(feat_df) == 100
     for col in FEATURES:
         assert col in feat_df.columns
         assert not feat_df[col].isna().any(), f"Unexpected NaN in feature {col}"

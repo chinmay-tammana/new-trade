@@ -11,7 +11,11 @@ import numpy as np
 import pandas as pd
 
 
-def make_labels_v2(df_features: pd.DataFrame, base_threshold: float = 0.0010) -> pd.DataFrame:
+def make_labels_v2(
+    df_features: pd.DataFrame,
+    base_threshold: float = 0.0010,
+    **kwargs
+) -> pd.DataFrame:
     """Compute forward returns and decisive masks for H1, H3, HD, and VOL targets.
 
     Parameters
@@ -27,12 +31,15 @@ def make_labels_v2(df_features: pd.DataFrame, base_threshold: float = 0.0010) ->
         DataFrame with targets fwd_H1, y_H1, decisive_H1, fwd_H3, y_H3, decisive_H3,
         fwd_HD, y_HD, decisive_HD, and target_vol.
     """
+    if "label_threshold" in kwargs:
+        base_threshold = kwargs["label_threshold"]
+
     df = df_features.copy()
     close = df["close"]
-    high = df["high"]
-    low = df["low"]
+    high = df["high"] if "high" in df.columns else close
+    low = df["low"] if "low" in df.columns else close
     dates = df.index.date
-    session_offset = df["bars_since_open"].to_numpy()
+    session_offset = df["bars_since_open"].to_numpy() if "bars_since_open" in df.columns else np.zeros(len(df))
 
     # --- Target 1: H1 (Next 1-hour bar, same day) ---
     c_next_1 = close.shift(-1)
@@ -197,3 +204,7 @@ def run_truncation_test_v2(
     assert passed, f"LOOK-AHEAD LEAK DETECTED in {violating_feature}! Discrepancy {max_abs_diff} > 1e-8."
     print("PASS: Truncation test passed with zero look-ahead bias confirmed across all features.")
     return passed
+
+
+# Backward compatibility alias
+make_labels = make_labels_v2

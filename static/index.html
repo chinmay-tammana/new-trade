@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GS AI Trading Indicator — Live Engine</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Vendored Lightweight Charts without external runtime requests -->
+  <script src="vendor/lightweight-charts.standalone.production.js"></script>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="ticker-badge">GS</span>
+      <h1>AI Directional Indicator (1h)</h1>
+      <span class="badge badge-info" id="badge-feed">FEED: IEX</span>
+    </div>
+
+    <div class="badges-bar">
+      <span class="badge" id="badge-market">MARKET ...</span>
+      <span class="badge" id="badge-signals">SIGNALS ...</span>
+      <span class="badge badge-info" id="badge-model">MODEL: ...</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- Chart Panel -->
+    <section id="chart-panel">
+      <div class="chart-header">
+        <div><strong>Goldman Sachs (NYSE: GS)</strong> — Session-Anchored 1-Hour Candles</div>
+        <div id="chart-legend" style="color: #8b95a8; font-size: 12px;">Band [q=0.10, 0.90]</div>
+      </div>
+      <div id="tv-chart"></div>
+    </section>
+
+    <!-- Side Panel -->
+    <aside id="side-panel">
+      <!-- Warning Banners Container -->
+      <div id="banner-container"></div>
+
+      <!-- Hero Direction Card -->
+      <div class="hero-card" id="hero-card">
+        <span class="strong-pill" id="strong-pill" style="display:none;">STRONG</span>
+        <div class="direction-title direction-none" id="hero-direction">INITIALIZING</div>
+        <div class="hero-meta">
+          <div>Confidence: <strong id="hero-conf">--%</strong></div>
+          <div>Horizon: <strong id="hero-horizon">H1 (1h)</strong></div>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Grid -->
+      <div class="metrics-grid">
+        <div class="metric-box">
+          <div class="metric-label">Volatility Class</div>
+          <div class="metric-value" id="val-vol">--</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Market Regime</div>
+          <div class="metric-value" id="val-regime">--</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Next Bar Close</div>
+          <div class="metric-value" id="val-countdown" style="color:#f59e0b;">--:--</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Hist. Hour Hit Rate</div>
+          <div class="metric-value" id="val-hist-hit">--%</div>
+        </div>
+      </div>
+
+      <!-- Verified Evidence Note -->
+      <div class="panel-note">
+        <strong>Statistical Notice</strong>: High signal coverage (~89%). An individual hourly signal is weak evidence on its own (Holdout: 52.25% acc, 95% Wilson CI: [49.65%, 54.84%]). Never risk capital on a single candle.
+      </div>
+
+      <!-- Scoreboard Section -->
+      <div class="scoreboard-section">
+        <h3>Live Test Scorecard</h3>
+        <div class="metrics-grid">
+          <div class="metric-box">
+            <div class="metric-label">Resolved Signals</div>
+            <div class="metric-value" id="score-resolved">0</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">Test Hit Rate</div>
+            <div class="metric-value" id="score-acc">--%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Signal Log Table -->
+      <div class="scoreboard-section" style="flex:1; display:flex; flex-direction:column;">
+        <h3>Recent Signals Log</h3>
+        <div class="signals-table-container">
+          <table class="signal-table">
+            <thead>
+              <tr>
+                <th>Time (ET)</th>
+                <th>Signal</th>
+                <th>Conf</th>
+                <th>Outcome</th>
+              </tr>
+            </thead>
+            <tbody id="signals-tbody">
+              <tr><td colspan="4" style="text-align:center; color:#8b95a8;">Loading signals...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    <div>Educational project. Paper trading only. Not financial advice.</div>
+    <div id="footer-time">Server: --:--:-- ET</div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

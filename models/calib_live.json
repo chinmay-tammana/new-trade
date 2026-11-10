@@ -1,0 +1,17 @@
+{
+  "q_lo": 0.49039070402502494,
+  "q_hi": 0.5084378717638838,
+  "strong_confidence_threshold": 0.5204138518818737,
+  "primary_horizon": "H1",
+  "holdout_all_accuracy": 0.5225035161744023,
+  "holdout_all_ci": [
+    0.4965164198443324,
+    0.5483693559227253
+  ],
+  "holdout_strong_accuracy": 0.5155855096882898,
+  "holdout_strong_ci": [
+    0.4871507683430916,
+    0.5439196984482152
+  ],
+  "holdout_strong_count": 1187
+}

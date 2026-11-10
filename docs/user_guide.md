@@ -108,3 +108,15 @@ Each output has specific operational boundaries and statistical blind spots. Tra
 - **Holding Period**: The model operates strictly on a **1-hour horizon ($H1$)**. Enter at bar close / next open, and exit strictly at the close of the subsequent bar.
 - **Overnight Prohibition**: **NEVER hold overnight.** The 15:30–16:00 bar generates no signals. All positions must be liquidated before 16:00 ET.
 - **Stop Loss**: Maintain an intraday catastrophe stop at **-50 bps (-0.50%)** to guard against flash crashes.
+
+---
+
+## 5. V3 Live Dashboard & Server Operations
+
+The V3 upgrade provides a deterministic live engine, read-only REST API, and TradingView Lightweight Charts dashboard:
+
+- **Starting Live Dashboard**: Run `./run_live.sh` or `python -m src.live.server --port 8000`.
+- **Accessing Dashboard**: Open `http://localhost:8000`.
+- **Live Parity Safeguard**: The system monitors IEX feed parity against consolidated SIP bars. Because IEX captures only 2-3% of consolidated volume, Gate B (72.14% < 75%) and Gate C (31.08% missing minutes > 5%) triggered the fallback protocol: live signals are set to `live_signals_enabled = False` by default with clear UI banners.
+- **STRONG Confidence Tier**: The dashboard highlights trades meeting the pre-holdout OOF 75th percentile confidence threshold ($\ge 52.04\%$).
+- **Live Scoring**: Run `python -m src.live.score --since YYYY-MM-DD` at the end of each session to calculate rolling live performance, Wilson CIs, and net returns.

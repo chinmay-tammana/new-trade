@@ -1,0 +1,32 @@
+{
+  "fomc_dates": [
+    {"date": "2026-01-28", "event": "FOMC Rate Decision", "source": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"},
+    {"date": "2026-03-18", "event": "FOMC Rate Decision & SEP", "source": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"},
+    {"date": "2026-04-29", "event": "FOMC Rate Decision", "source": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"},
+    {"date": "2026-06-17", "event": "FOMC Rate Decision & SEP", "source": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"},
+    {"date": "2026-07-29", "event": "FOMC Rate Decision", "source": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"},
+    {"date": "2026-09-16", "event": "FOMC Rate Decision & SEP", "source": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"},
+    {"date": "2026-11-04", "event": "FOMC Rate Decision", "source": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"},
+    {"date": "2026-12-16", "event": "FOMC Rate Decision & SEP", "source": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"}
+  ],
+  "cpi_dates": [
+    {"date": "2026-01-14", "event": "Consumer Price Index Release", "source": "https://www.bls.gov/schedule/news_release/cpi.htm"},
+    {"date": "2026-02-11", "event": "Consumer Price Index Release", "source": "https://www.bls.gov/schedule/news_release/cpi.htm"},
+    {"date": "2026-03-11", "event": "Consumer Price Index Release", "source": "https://www.bls.gov/schedule/news_release/cpi.htm"},
+    {"date": "2026-04-10", "event": "Consumer Price Index Release", "source": "https://www.bls.gov/schedule/news_release/cpi.htm"},
+    {"date": "2026-05-12", "event": "Consumer Price Index Release", "source": "https://www.bls.gov/schedule/news_release/cpi.htm"},
+    {"date": "2026-06-10", "event": "Consumer Price Index Release", "source": "https://www.bls.gov/schedule/news_release/cpi.htm"},
+    {"date": "2026-07-14", "event": "Consumer Price Index Release", "source": "https://www.bls.gov/schedule/news_release/cpi.htm"},
+    {"date": "2026-08-12", "event": "Consumer Price Index Release", "source": "https://www.bls.gov/schedule/news_release/cpi.htm"},
+    {"date": "2026-09-11", "event": "Consumer Price Index Release", "source": "https://www.bls.gov/schedule/news_release/cpi.htm"},
+    {"date": "2026-10-14", "event": "Consumer Price Index Release", "source": "https://www.bls.gov/schedule/news_release/cpi.htm"},
+    {"date": "2026-11-12", "event": "Consumer Price Index Release", "source": "https://www.bls.gov/schedule/news_release/cpi.htm"},
+    {"date": "2026-12-10", "event": "Consumer Price Index Release", "source": "https://www.bls.gov/schedule/news_release/cpi.htm"}
+  ],
+  "gs_earnings_dates": [
+    {"date": "2026-01-15", "event": "Goldman Sachs Q4 Earnings Release", "source": "https://www.goldmansachs.com/investor-relations/financials/"},
+    {"date": "2026-04-14", "event": "Goldman Sachs Q1 Earnings Release", "source": "https://www.goldmansachs.com/investor-relations/financials/"},
+    {"date": "2026-07-15", "event": "Goldman Sachs Q2 Earnings Release", "source": "https://www.goldmansachs.com/investor-relations/financials/"},
+    {"date": "2026-10-14", "event": "Goldman Sachs Q3 Earnings Release", "source": "https://www.goldmansachs.com/investor-relations/financials/"}
+  ]
+}

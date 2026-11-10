@@ -1,0 +1,5 @@
+timestamp,close,direction,confidence,vol_class,band_low_bps,band_high_bps,regime,fwd_ret_bps,outcome
+2024-11-29 09:30:00-05:00,609.86,No Signal,54.9%,Normal,-43.0,+45.2,Chop,+22.5,Abstained
+2024-11-29 10:30:00-05:00,611.23,No Signal,52.9%,Low,-32.6,+33.8,Uptrend,+13.1,Abstained
+2024-11-29 11:30:00-05:00,612.03,No Signal,53.5%,Low,-31.6,+27.0,Uptrend,-56.5,Abstained
+2024-11-29 12:30:00-05:00,608.57,Up,59.5%,Normal,-47.3,+48.4,Chop,NaN,Unlabelled (Session Close)

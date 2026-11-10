@@ -107,12 +107,13 @@ The feature matrix $X \in \mathbb{R}^{N \times 51}$ is partitioned into 9 groups
 5. **Two-Sided Quantile Thresholds**: $q_{\text{lo}} = 0.49039, q_{\text{hi}} = 0.50844$. Assertions enforce $n_{\text{up}} \ge 150, n_{\text{down}} \ge 150$.
 
 ### Step 5: Research Holdout Single Read
-- Evaluated strictly once on 1,872 bars (October 16, 2025 to November 9, 2026).
-- Generated 888 Up, 786 Down, 198 No-Signal.
-- Direction accuracy: **52.25%** (Wilson 95% CI: [49.65%, 54.84%]).
-- Permutation test (10k shuffles): **$p = 0.0417$** (statistically significant vs random guessing).
-- Drift-adjusted: Up +1.59% vs base (51.65% vs 50.06%), Down +3.20% vs base (53.14% vs 49.94%).
+- Evaluated strictly once on 1,872 bars (1,604 labelled hourly bars, October 16, 2025 to November 9, 2026).
+- Generated 888 Up, 786 Down, 198 No-Signal across all bars (848 Up, 574 Down, 182 No-Signal on labelled bars).
+- Evaluated direction accuracy: **52.25%** (743 / 1,422; Wilson 95% CI: [49.65%, 54.84%]).
+- Permutation test (10k shuffles): **$p = 0.0417$**.
+- Drift-adjusted: Up +1.59 points vs base (51.65% vs 50.06%), Down +3.20 points vs base (53.14% vs 49.94%).
 - Calibration: Holdout $\text{ECE} = 0.0249$ ($\le 0.05$).
+- Pre-registered Criterion B: NOT MET (accuracy below 53.0% threshold).
 
 ### Step 6: Final Refit & Reusable API
 - All 13,884 bars up to freeze date are fit into `models/model_v2.joblib`, `models/calib_v2.joblib`, `models/vol_v2.joblib`, and `models/band_v2.joblib`.

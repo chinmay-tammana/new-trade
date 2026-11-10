@@ -23,7 +23,7 @@ In **Phase 2 (V2 Upgrade)**, we overhauled the system:
 4. **Mandatory Two-Sided Signal Rule**: Quantile-based thresholding ($q_{\text{lo}} = 0.4904, q_{\text{hi}} = 0.5084$ at $c = 0.30$) with code assertions guaranteeing two-sided emissions.
 5. **Multi-Head Insight Engine**: Directional heads ($H1, H3, HD$), a volatility regressor (`VOL`), quantile return bounds (`BAND`), and trend/chop classification (`REGIME`).
 
-Evaluated on the unobserved 1,872-bar Research Holdout, the V2 indicator emitted **888 Up** and **786 Down** signals (two-sided assertion verified), achieving **52.25%** overall accuracy (95% Wilson CI: [49.65%, 54.84%]). A 10,000-shuffle permutation test yielded **$p = 0.0417$**, confirming statistically significant skill vs random guessing ($\alpha = 0.05$). Drift-adjusted accuracy improved over period base rates on both sides (+1.59% Up, +3.20% Down), and Expected Calibration Error remained low ($\text{ECE} = 0.0249$). In horizontal Chop regimes, accuracy reached **58.30%** with a positive net return of **+2.28 bps** after 5 bps friction. All models, logs, and artifacts are frozen and pushed to GitHub.
+Evaluated on the unobserved Research Holdout (1,872 total bars, 1,604 labelled hourly bars), the V2 indicator emitted **888 Up** and **786 Down** signals across all bars (and **848 Up** / **574 Down** on labelled bars; two-sided assertion verified). On evaluated labelled bars, it achieved **52.25%** overall signal accuracy (743 / 1,422; 95% Wilson CI: [49.65%, 54.84%]). A 10,000-shuffle permutation test yielded **$p = 0.0417$** ($\alpha = 0.05$). Drift-adjusted accuracy improved over period base rates on both sides (+1.59 points Up, +3.20 points Down), and Expected Calibration Error remained low ($\text{ECE} = 0.0249$). However, because accuracy remained below the pre-registered 53.0% threshold, pre-registered Criterion B was NOT MET. In horizontal Chop regimes, accuracy reached **58.30%** with a positive net return of **+2.28 bps** after 5 bps friction. All models, logs, and artifacts are frozen and pushed to GitHub.
 
 ---
 
@@ -108,22 +108,24 @@ To evaluate the contribution of each of the 9 feature groups, single-group leave
 The Research Holdout covers **1,872 session-anchored 1h bars** (October 16, 2025 to November 9, 2026). It was read **strictly once** by `src/evaluate_holdout_v2.py`.
 
 ### 6.1 Directional Signal Performance
-- **Total Evaluated Bars**: 1,872
-- **Signal Emissions**: 888 Up (47.4%), 786 Down (42.0%), 198 No-Signal (10.6%). Total coverage = 89.4%.
-- **Overall Signal Accuracy**: **`52.25%`** (874 correct out of 1,674 emitted signals).
+- **Total Ingested Holdout Bars**: 1,872 bars (268 trading days).
+- **Labelled Hourly Bars**: 1,604 bars (excluding 268 unlabelled session-ending 15:30–16:00 candles).
+- **Signal Emissions on All Bars**: 888 Up (47.4%), 786 Down (42.0%), 198 No-Signal (10.6%). Total coverage = 89.4%.
+- **Signal Emissions on Labelled Bars**: 848 Up (52.9%), 574 Down (35.8%), 182 No-Signal (11.3%). Labelled coverage = 88.7% (1,422 / 1,604).
+- **Overall Evaluated Signal Accuracy**: **`52.25%`** (743 correct out of 1,422 emitted signals).
 - **Wilson 95% Confidence Interval**: **`[49.65%, 54.84%]`**.
 - **Balanced Accuracy**: **`52.39%`**.
-- **10,000-Shuffle Permutation Test**: **`p = 0.0417`** (Statistically significant at $\alpha = 0.05$).
+- **10,000-Shuffle Permutation Test**: **`p = 0.0417`** ($\alpha = 0.05$).
 
 ### 6.2 Per-Side Drift-Adjusted Performance
 - **Up Signals**:
-  - Accuracy: **51.65%** (457 / 888)
-  - Period Base Up-Rate on All Holdout Candles: **50.06%**
-  - Drift-Adjusted Up Edge: **`+1.59%`** over base rate
+  - Accuracy: **51.65%** (438 / 848) (Wilson 95% CI: `[48.29%, 55.00%]`)
+  - Period Base Up-Rate on All Labelled Holdout Candles: **50.06%** (803 / 1,604)
+  - Drift-Adjusted Up Edge: **`+1.59 points`** over base rate
 - **Down Signals**:
-  - Accuracy: **53.14%** (417 / 786)
-  - Period Base Down-Rate on All Holdout Candles: **49.94%**
-  - Drift-Adjusted Down Edge: **`+3.20%`** over base rate
+  - Accuracy: **53.14%** (305 / 574) (Wilson 95% CI: `[49.05%, 57.18%]`)
+  - Period Base Down-Rate on All Labelled Holdout Candles: **49.94%** (801 / 1,604)
+  - Drift-Adjusted Down Edge: **`+3.20 points`** over base rate
 
 Both sides independently outperformed their respective period base rates, resolving V1's directional asymmetry.
 
@@ -136,7 +138,7 @@ Both sides independently outperformed their respective period base rates, resolv
 | **SPY Bull** | SPY 60d Return $> 0$ | 1,466 | 52.73% | -2.71 bps |
 | **SPY Bear** | SPY 60d Return $\le 0$ | 208 | 48.80% | -9.31 bps |
 
-**Key Finding**: The indicator operates as a powerful intraday mean-reversion engine, generating a highly profitable **58.30% hit rate and +2.28 bps net return after friction** during horizontal chop regimes.
+**Key Finding**: The indicator operates as a powerful intraday mean-reversion engine, generating a hit rate of **58.30% and +2.28 bps net return after friction** during horizontal chop regimes.
 
 ### 6.4 Economic Viability Under Execution Friction
 - Gross Return per Signal: +1.47 bps
@@ -164,9 +166,9 @@ Both sides independently outperformed their respective period base rates, resolv
 
 | Criterion | Specification | Empirical Evidence | Final Verdict |
 | :--- | :--- | :--- | :--- |
-| **Criterion A** | Pre-Holdout OOF Log-Loss beats Prior | Ensemble log-loss $0.69279$ vs Prior $0.69272$ ($+0.00007$); ElasticNet $0.69281$ | **MET** |
-| **Criterion B** | $\ge 100$ signals/side; Acc $\ge 53\%$ with $p < 0.10$ | 888 Up, 786 Down ($\gg 100$); Acc = **$52.25\%$** ($<53\%$); Permutation **$p = \mathbf{0.0417}$** ($< 0.10$) | **PARTIAL** (Skill demonstrated at $p < 0.05$) |
-| **Criterion C** | Each side beats respective base rate | Up: 51.65% vs 50.06% (+1.59%); Down: 53.14% vs 49.94% (+3.20%) | **MET** |
+| **Criterion A** | Pre-Holdout OOF Log-Loss beats Prior | Ensemble log-loss $0.69279$ vs Prior $0.69272$ ($+0.00007$); ElasticNet $0.69281$ | **MET (Comparable)** |
+| **Criterion B** | $\ge 100$ signals/side; Acc $\ge 53\%$ with $p < 0.10$ | 848 Up, 574 Down ($\gg 100$); Acc = **$52.25\%$** ($< 53.0\%$); Permutation **$p = \mathbf{0.0417}$** | **NOT MET** (Accuracy below 53.0% threshold) |
+| **Criterion C** | Each side beats respective base rate | Up: 51.65% vs 50.06% (+1.59 pts); Down: 53.14% vs 49.94% (+3.20 pts) | **MET** |
 | **Criterion D** | Holdout ECE $\le 0.05$ | Holdout $\text{ECE} = \mathbf{0.0249}$ | **MET** |
 | **Criterion E** | All 7 integrity checks pass | 100% passed (Truncation diff = 0.00e+00, Null acc = 49.49%) | **MET** |
 
@@ -192,3 +194,18 @@ The automated audit suite (`src/checks.py`) executed 7 distinct verification che
 7. **Git Security Scan**: 0 API secrets, 0 private tokens, 0 parquet files committed (PASS).
 
 All reproduction commands are packaged in `run_all.sh`.
+
+---
+
+## 11. V3 Live Pipeline, Feed Parity, and Deployment Architecture
+
+The V3 upgrade transitions the research pipeline into an operational live production engine:
+1. **Live Feed Decision & Parity Gates**: Free SIP feeds are delayed by 15 minutes, making them unusable for live top-of-the-hour signaling. The live engine adopts `feed=iex`. A 60-day empirical parity evaluation established:
+   - **Gate A (Direction Agreement)**: **97.44%** ($\ge 85.0\%$) $\rightarrow$ **PASS**.
+   - **Gate B (Three-Class Agreement)**: **72.14%** ($< 75.0\%$) $\rightarrow$ **FAIL**.
+   - **Gate C (Missing GS Minutes)**: **31.08%** ($> 5.0\%$) $\rightarrow$ **FAIL** (IEX represents only 2%–3% of consolidated volume).
+   - Per pre-registered protocol, models remained strictly frozen (`model-v2` untouched), and `live_signals_enabled = False` was set by default with clear UI fallback banners.
+2. **Immutable Audit Store (`src/live/store.py`)**: SQLite in WAL mode with abort triggers on `UPDATE` and `DELETE`, plus SHA-256 hash chaining of all emitted signals.
+3. **Deterministic Session Scheduling (`src/live/calendar.py`)**: Half-day aware (e.g. 4 bars on 13:00 early closes), daylight savings aware (`America/New_York`), and timed ingestion at bar close + 10s with 90s exponential retry backoff.
+4. **Read-Only API & Web Dashboard (`src/live/server.py`, `static/`)**: Read-only FastAPI server with SSE streaming and vendored TradingView Lightweight Charts v4.2.1 dashboard.
+5. **Live Scoring CLI (`src/live/score.py`)**: Evaluates forward 1-hour outcomes on closed bars, tracking Wilson 95% CIs and simulated net returns. Displays interim statistical power banners for windows $< 5$ trading days.
