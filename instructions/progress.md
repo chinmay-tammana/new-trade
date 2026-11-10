@@ -34,16 +34,16 @@ Earlier 2-year run: test set 587 eligible hourly candles; 114 Up signals, 0 Down
   - [x] Audit figures generated in `results/figures/`
   - [x] Phase 2 committed and pushed
 
-- [ ] **Phase 3: EDA, Features, Labels, Preprocessing**
-  - [ ] Base-only EDA completed with figures in `results/figures/` and `docs/eda_findings.md`
-  - [ ] Drift check (Base vs FT Kolmogorov-Smirnov) completed
-  - [ ] `src/features.py` implemented (`make_features`)
-  - [ ] `src/labels.py` implemented (fwd simple return, overnight NaN, decisive filtering)
-  - [ ] `src/preprocessing.py` implemented (fold-isolated transformers)
-  - [ ] Truncation test passed (no look-ahead)
-  - [ ] Pytest suite in `tests/` passed
-  - [ ] `data/processed/dataset.parquet` generated
-  - [ ] Phase 3 committed and pushed
+- [x] **Phase 3: EDA, Features, Labels, Preprocessing**
+  - [x] Base-only EDA completed with figures in `results/figures/` and `docs/eda_findings.md`
+  - [x] Drift check (Base vs FT Kolmogorov-Smirnov) completed (`results/tables/drift_ks_base_vs_ft.csv`)
+  - [x] `src/features.py` implemented (`make_features`, 22 stationary causal features)
+  - [x] `src/labels.py` implemented (fwd simple return, overnight NaN, decisive filtering)
+  - [x] `src/preprocessing.py` implemented (fold-isolated InFoldWinsorizer and StandardScaler)
+  - [x] Truncation test passed (50 cutoffs, max difference 0.00e+00, zero look-ahead confirmed)
+  - [x] Pytest suite in `tests/` passed (9 passed)
+  - [x] `data/processed/dataset.parquet` generated (7,118 rows)
+  - [x] Phase 3 committed and pushed
 
 - [ ] **Phase 4: Split and Simple Baselines**
   - [ ] Strict chronological split (Base, FT, Val, Test) with 8-bar gaps in `src/split.py`

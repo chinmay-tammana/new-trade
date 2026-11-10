@@ -45,6 +45,8 @@ def wilson_score_interval(successes: int, total: int, confidence: float = 0.95) 
     spread = (z * math.sqrt((p_hat * (1.0 - p_hat) / total) + (z2 / (4.0 * total * total)))) / denom
 
     lower = max(0.0, center - spread)
+    if lower < 1e-15:
+        lower = 0.0
     upper = min(1.0, center + spread)
     return p_hat, lower, upper
 
