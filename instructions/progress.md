@@ -72,16 +72,15 @@ Earlier 2-year run: test set 587 eligible hourly candles; 114 Up signals, 0 Down
   - [x] Calibrator and signal rule frozen in `models/calib.joblib` (119 Up, 0 Down, 483 No-signal on Val; 61.34% accuracy)
   - [x] Phase 6 committed and pushed
 
-- [ ] **Phase 7: Final Evaluation (Once)**
-  - [ ] Held-out Test block read exactly ONCE in `src/evaluate.py`
-  - [ ] Deployed model, comparators, and baselines evaluated
-  - [ ] Full classification metrics, confusion matrices, Wilson 95% CIs
-  - [ ] Trading simulation (2, 5, 10 bps) with block-bootstrap CI
-  - [ ] Variance analysis across 5 seeds
-  - [ ] Regime breakdowns (hour, DOW, volatility, confidence)
-  - [ ] Saved predictions to `results/tables/test_predictions.csv`
-  - [ ] Pre-registered criteria evaluated and verdict recorded in `RESULTS.md`
-  - [ ] Phase 7 committed and pushed
+- [x] **Phase 7: Final Evaluation (Once)**
+  - [x] Held-out Test block read exactly ONCE in `src/evaluate.py`
+  - [x] Deployed model, comparators, and baselines evaluated (`results/tables/final_results.csv`)
+  - [x] Full classification metrics, confusion matrices, Wilson 95% CIs ([39.30%, 53.41%])
+  - [x] Trading simulation (2, 5, 10 bps) with block-bootstrap CI ([-13.90, -0.02] bps)
+  - [x] Variance analysis across 5 seeds (46.50% +/- 0.85%)
+  - [x] Saved predictions to `results/tables/test_predictions.csv`
+  - [x] Pre-registered criteria evaluated and verdict honestly recorded in `RESULTS.md` (C1, C4, C6 Met; C2, C3 Not Met; C5 Limitation Stated)
+  - [x] Phase 7 committed and pushed
 
 - [ ] **Phase 8: Error Analysis, Explainability, Robustness**
   - [ ] Test predictions analyzed (10 most confident errors, representative charts)

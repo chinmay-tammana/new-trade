@@ -54,5 +54,101 @@
     "last_timestamp": "2025-11-07 09:30:00-05:00",
     "row_count": 3360,
     "logged_at": "2026-11-10T23:24:53.259718"
+  },
+  {
+    "entry_id": 8,
+    "purpose": "Variance refit (seed=43)",
+    "first_timestamp": "2022-10-18 14:30:00-04:00",
+    "last_timestamp": "2025-11-07 09:30:00-05:00",
+    "row_count": 3360,
+    "logged_at": "2026-11-10T23:29:44.352689"
+  },
+  {
+    "entry_id": 9,
+    "purpose": "Variance refit (seed=44)",
+    "first_timestamp": "2022-10-18 14:30:00-04:00",
+    "last_timestamp": "2025-11-07 09:30:00-05:00",
+    "row_count": 3360,
+    "logged_at": "2026-11-10T23:29:44.396477"
+  },
+  {
+    "entry_id": 10,
+    "purpose": "Variance refit (seed=45)",
+    "first_timestamp": "2022-10-18 14:30:00-04:00",
+    "last_timestamp": "2025-11-07 09:30:00-05:00",
+    "row_count": 3360,
+    "logged_at": "2026-11-10T23:29:44.441972"
+  },
+  {
+    "entry_id": 11,
+    "purpose": "Variance refit (seed=46)",
+    "first_timestamp": "2022-10-18 14:30:00-04:00",
+    "last_timestamp": "2025-11-07 09:30:00-05:00",
+    "row_count": 3360,
+    "logged_at": "2026-11-10T23:29:44.486156"
+  },
+  {
+    "entry_id": 12,
+    "purpose": "Variance refit (seed=43)",
+    "first_timestamp": "2022-10-18 14:30:00-04:00",
+    "last_timestamp": "2025-11-07 09:30:00-05:00",
+    "row_count": 3360,
+    "logged_at": "2026-11-10T23:29:58.036335"
+  },
+  {
+    "entry_id": 13,
+    "purpose": "Variance refit (seed=44)",
+    "first_timestamp": "2022-10-18 14:30:00-04:00",
+    "last_timestamp": "2025-11-07 09:30:00-05:00",
+    "row_count": 3360,
+    "logged_at": "2026-11-10T23:29:58.080040"
+  },
+  {
+    "entry_id": 14,
+    "purpose": "Variance refit (seed=45)",
+    "first_timestamp": "2022-10-18 14:30:00-04:00",
+    "last_timestamp": "2025-11-07 09:30:00-05:00",
+    "row_count": 3360,
+    "logged_at": "2026-11-10T23:29:58.123047"
+  },
+  {
+    "entry_id": 15,
+    "purpose": "Variance refit (seed=46)",
+    "first_timestamp": "2022-10-18 14:30:00-04:00",
+    "last_timestamp": "2025-11-07 09:30:00-05:00",
+    "row_count": 3360,
+    "logged_at": "2026-11-10T23:29:58.166711"
+  },
+  {
+    "entry_id": 16,
+    "purpose": "Variance refit (seed=43)",
+    "first_timestamp": "2022-10-18 14:30:00-04:00",
+    "last_timestamp": "2025-11-07 09:30:00-05:00",
+    "row_count": 3360,
+    "logged_at": "2026-11-10T23:30:16.302077"
+  },
+  {
+    "entry_id": 17,
+    "purpose": "Variance refit (seed=44)",
+    "first_timestamp": "2022-10-18 14:30:00-04:00",
+    "last_timestamp": "2025-11-07 09:30:00-05:00",
+    "row_count": 3360,
+    "logged_at": "2026-11-10T23:30:16.345928"
+  },
+  {
+    "entry_id": 18,
+    "purpose": "Variance refit (seed=45)",
+    "first_timestamp": "2022-10-18 14:30:00-04:00",
+    "last_timestamp": "2025-11-07 09:30:00-05:00",
+    "row_count": 3360,
+    "logged_at": "2026-11-10T23:30:16.388921"
+  },
+  {
+    "entry_id": 19,
+    "purpose": "Variance refit (seed=46)",
+    "first_timestamp": "2022-10-18 14:30:00-04:00",
+    "last_timestamp": "2025-11-07 09:30:00-05:00",
+    "row_count": 3360,
+    "logged_at": "2026-11-10T23:30:16.432713"
   }
 ]
