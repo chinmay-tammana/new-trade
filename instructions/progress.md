@@ -45,13 +45,13 @@ Earlier 2-year run: test set 587 eligible hourly candles; 114 Up signals, 0 Down
   - [x] `data/processed/dataset.parquet` generated (7,118 rows)
   - [x] Phase 3 committed and pushed
 
-- [ ] **Phase 4: Split and Simple Baselines**
-  - [ ] Strict chronological split (Base, FT, Val, Test) with 8-bar gaps in `src/split.py`
-  - [ ] Split indices and boundaries saved to `results/logs/split.json`
-  - [ ] Evaluation protocol frozen in `docs/evaluation_protocol.md`
-  - [ ] Simple baselines evaluated on Val in `src/baselines.py`
-  - [ ] Baseline table generated in `results/tables/`
-  - [ ] Phase 4 committed and pushed
+- [x] **Phase 4: Split and Simple Baselines**
+  - [x] Strict chronological split (Base, FT, Val, Test) with 8-bar gaps in `src/split.py`
+  - [x] Split indices and boundaries saved to `results/logs/split.json`
+  - [x] Evaluation protocol frozen in `docs/evaluation_protocol.md`
+  - [x] Simple baselines evaluated on Val in `src/baselines.py`
+  - [x] Baseline table generated in `results/tables/baselines_val.csv`
+  - [x] Phase 4 committed and pushed
 
 - [ ] **Phase 5: Models, Training and Fine-Tuning**
   - [ ] Stage A: Base model trained, CV sanity checked, S0 evaluated on Val
