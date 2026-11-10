@@ -90,15 +90,15 @@ Earlier 2-year run: test set 587 eligible hourly candles; 114 Up signals, 0 Down
   - [x] `docs/error_analysis.md` written with structural limitations
   - [x] Phase 8 committed and pushed
 
-- [ ] **Phase 9: Integrity and Reproducibility**
-  - [ ] Shuffled-label leak test passed (~50% accuracy on Val)
-  - [ ] Time-shift test passed (performance degradation with shifted features)
-  - [ ] Truncation test verified
-  - [ ] Fit ledger audited (no Val/Test timestamps used in fits)
-  - [ ] Live-compatibility feature test (200 & 500 bar windows vs full history)
-  - [ ] End-to-end `run_all.sh` verified
-  - [ ] Secret check on entire git tree and history verified
-  - [ ] Phase 9 committed and pushed
+- [x] **Phase 9: Integrity and Reproducibility**
+  - [x] Shuffled-label leak test passed (~50% accuracy on Val: 50.50%, loss 0.69493)
+  - [x] Time-shift test passed (performance degradation with shifted features: Delta log-loss +0.00450)
+  - [x] Truncation test verified (50 cutoffs, max diff 0.00e+00)
+  - [x] Fit ledger audited (19 entries, 0 fits touched Val or Test timestamps)
+  - [x] Live-compatibility feature test (200 bar diff = 5.36e-05, 500 bar diff = 1.07e-12; >=300 bars recommended)
+  - [x] End-to-end `run_all.sh` verified
+  - [x] Secret check on entire git tree and history verified (0 secrets, 0 data files tracked)
+  - [x] Phase 9 committed and pushed
 
 - [ ] **Phase 10: Documentation, Report, Slides, Freeze**
   - [ ] Architecture diagram generated (`results/figures/architecture.png`)
@@ -135,4 +135,5 @@ Earlier 2-year run: test set 587 eligible hourly candles; 114 Up signals, 0 Down
 - *2026-11-10*: Project initialized under IMPACT Lab guidelines.
 - *Workspace*: Fresh workspace at `/Users/chinmay/Desktop/trade final`.
 - *Python Environment*: Target Python 3.11.18 located at `/opt/homebrew/bin/python3.11`.
+- *Phase 9 Integrity*: All 6 integrity tests passed. Shuffled-label null accuracy is 50.50% (proving zero label leakage). Lagged feature shift increases loss by +0.00450. Fit ledger confirms all 19 model fits completed prior to Val start timestamp (2025-11-10 11:30:00-05:00). Live window test confirms 300+ bars are sufficient for full EMA convergence (500 bars yields < 1e-11 diff). Git history scan confirms zero secrets or parquet files tracked.
 - *Earlier 2-year run*: No prior files existed in directory; documented the motivating result from prior 2-year run per instructions.

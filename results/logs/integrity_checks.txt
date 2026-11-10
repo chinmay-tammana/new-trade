@@ -1,0 +1,11 @@
+=== PHASE 9 INTEGRITY AND REPRODUCIBILITY AUDIT REPORT ===
+Timestamp: 2026-11-10 23:35:48.830993
+
+1. Shuffled-Label Null Test: PASS (Val Acc = 50.50%, Log-Loss = 0.69493)
+2. Time-Shift Sensitivity:   PASS (Delta Log-Loss = +0.00450)
+3. Causal Truncation Test:   PASS (50 cutoffs, max diff = 0.00e+00)
+4. Fit Ledger Timestamp:     PASS (0 fits touched Val or Test)
+5. Live Window Divergence:   200 bars diff = 5.36e-05, 500 bars diff = 1.07e-12
+6. Git History Scan:         PASS (0 secrets, 0 data files tracked)
+
+FINAL INTEGRITY AUDIT VERDICT: ALL CHECKS PASSED
