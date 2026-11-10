@@ -112,13 +112,18 @@ def run_data_audit():
 
     # 4. Alignment / Inner Join
     gs_aligned = df_gs[["close", "volume"]].rename(columns={"close": "close_gs", "volume": "vol_gs"})
+    symbol_loss_lines = []
     for ctx in context_tickers:
         ctx_df = dfs[ctx][["close", "volume"]].rename(columns={"close": f"close_{ctx.lower()}", "volume": f"vol_{ctx.lower()}"})
+        common = df_gs.index.intersection(dfs[ctx].index)
+        lost_sym = len(df_gs) - len(common)
+        lost_sym_pct = (lost_sym / len(df_gs)) * 100.0
+        symbol_loss_lines.append(f"  GS vs {ctx}: {len(common)} shared | Lost: {lost_sym} ({lost_sym_pct:.2f}%)")
         gs_aligned = gs_aligned.join(ctx_df, how="inner")
     rows_lost = len(df_gs) - len(gs_aligned)
-    validation_lines.append(f"\nCross-Asset Alignment:")
-    validation_lines.append(f"  GS initial bars: {len(df_gs)}")
-    validation_lines.append(f"  After inner-joining SPY and XLF: {len(gs_aligned)} bars")
+    validation_lines.append(f"\nCross-Asset Alignment Audit (GS total: {len(df_gs)} bars):")
+    validation_lines.extend(symbol_loss_lines)
+    validation_lines.append(f"  After joint inner-join of all context symbols: {len(gs_aligned)} bars")
     validation_lines.append(f"  Bars lost to context misalignment: {rows_lost} ({rows_lost / len(df_gs) * 100:.2f}%)")
 
     # 5. Top 10 extreme single-bar returns
@@ -141,32 +146,25 @@ def run_data_audit():
     with open(logs_dir / "data_validation.txt", "w") as f:
         f.write("\n".join(validation_lines))
 
-    # 7. Define Era Boundaries
+    # 7. Record Preliminary Holdout & Span Boundaries
+    t_start = df_gs.index.min()
     t_end = df_gs.index.max()
-    era_days = CONFIG["era_days"]
-    y4_start = t_end - timedelta(days=era_days)
-    y3_start = t_end - timedelta(days=2 * era_days)
-
-    # Find integer index boundaries
-    i3 = int(np.searchsorted(df_gs.index, y4_start - timedelta(days=era_days)))
-    i4 = int(np.searchsorted(df_gs.index, y4_start))
+    holdout_start = pd.Timestamp(CONFIG.get("research_holdout_start", "2025-10-16"), tz=CONFIG["tz"])
+    i_holdout = int(np.searchsorted(df_gs.index, holdout_start))
 
     split_interim = {
-        "t_start": str(df_gs.index.min()),
+        "t_start": str(t_start),
         "t_end": str(t_end),
-        "era_days": era_days,
-        "y3_start_calendar": str(y3_start),
-        "y4_start_calendar": str(y4_start),
-        "i3_bar_index": i3,
-        "i4_bar_index": i4,
+        "holdout_start": str(holdout_start),
+        "i_holdout": i_holdout,
         "total_bars": len(df_gs),
-        "interim_status": "Defined preliminary boundaries; frozen final split constructed in Phase 4."
+        "protocol": "V2 quarterly walk-forward OOF + Research Holdout"
     }
     with open(logs_dir / "split.json", "w") as f:
         json.dump(split_interim, f, indent=2)
 
     # 8. Diagnostic Figures
-    generate_audit_figures(df_gs, y3_start, y4_start, figures_dir)
+    generate_audit_figures(df_gs, holdout_start, figures_dir)
     print("Audit completed successfully. Results saved to results/tables/, results/figures/, and results/logs/.")
 
 
@@ -212,7 +210,7 @@ def run_yfinance_parity(df_gs):
         return {"notes": f"yfinance check encountered error: {e}"}
 
 
-def generate_audit_figures(df_gs, y3_start, y4_start, figures_dir):
+def generate_audit_figures(df_gs, holdout_start, figures_dir):
     """Create the 5 required audit figures."""
     plt.style.use("default")
 
@@ -230,15 +228,15 @@ def generate_audit_figures(df_gs, y3_start, y4_start, figures_dir):
     plt.savefig(figures_dir / "bars_per_year.png", dpi=200)
     plt.close()
 
-    # 2. Price history with shaded era boundaries
-    plt.figure(figsize=(11, 5.5))
-    plt.plot(df_gs.index, df_gs["close"], color="#2c3e50", lw=1.2, label="GS 1h Close Price")
-    plt.axvline(y3_start, color="crimson", linestyle="--", lw=1.5, label="Year 3 Start (FT Boundary)")
-    plt.axvline(y4_start, color="darkorange", linestyle="--", lw=1.5, label="Year 4 Start (Val/Test Boundary)")
-    plt.axvspan(df_gs.index.min(), y3_start, color="lightblue", alpha=0.2, label="Base Era (~2 Years)")
-    plt.axvspan(y3_start, y4_start, color="lightgreen", alpha=0.2, label="Fine-Tuning Era (Year 3)")
-    plt.axvspan(y4_start, df_gs.index.max(), color="navajowhite", alpha=0.2, label="Year 4 (Val 40% / Test 60%)")
-    plt.title("Goldman Sachs (GS) 4-Year Price History with Partitioned Eras", fontsize=12, fontweight="bold")
+    # 2. Price history with shaded holdout boundary
+    plt.figure(figsize=(12, 5.5))
+    plt.plot(df_gs.index, df_gs["close"], color="#2c3e50", lw=1.1, label="GS 1h Close Price")
+    holdout_start = pd.Timestamp("2025-10-16", tz="America/New_York")
+    if df_gs.index.min() < holdout_start < df_gs.index.max():
+        plt.axvline(holdout_start, color="crimson", linestyle="--", lw=1.5, label="Research Holdout (2025-10-16)")
+        plt.axvspan(df_gs.index.min(), holdout_start, color="lightblue", alpha=0.2, label="Walk-Forward Training & OOF (2018-2025)")
+        plt.axvspan(holdout_start, df_gs.index.max(), color="navajowhite", alpha=0.3, label="Research Holdout (Unobserved)")
+    plt.title("Goldman Sachs (GS) 8-Year Price History (2018-2026) with Holdout Boundary", fontsize=12, fontweight="bold")
     plt.xlabel("Date (America/New_York)")
     plt.ylabel("Price ($ USD)")
     plt.legend(loc="upper left", framealpha=0.9)

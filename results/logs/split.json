@@ -1,40 +1,8 @@
 {
-  "status": "FROZEN",
-  "total_bars": 7118,
-  "gap_bars": 8,
-  "blocks": {
-    "Base": {
-      "start_idx": 0,
-      "end_idx": 3613,
-      "bar_count": 3613,
-      "labelled_count": 3096,
-      "min_timestamp": "2022-10-18 14:30:00-04:00",
-      "max_timestamp": "2024-11-07 14:30:00-05:00"
-    },
-    "FT": {
-      "start_idx": 3621,
-      "end_idx": 5353,
-      "bar_count": 1732,
-      "labelled_count": 1484,
-      "min_timestamp": "2024-11-11 09:30:00-05:00",
-      "max_timestamp": "2025-11-07 09:30:00-05:00"
-    },
-    "Val": {
-      "start_idx": 5361,
-      "end_idx": 6063,
-      "bar_count": 702,
-      "labelled_count": 602,
-      "min_timestamp": "2025-11-10 11:30:00-05:00",
-      "max_timestamp": "2026-04-07 13:30:00-04:00"
-    },
-    "Test": {
-      "start_idx": 6071,
-      "end_idx": 7118,
-      "bar_count": 1047,
-      "labelled_count": 896,
-      "min_timestamp": "2026-04-08 15:30:00-04:00",
-      "max_timestamp": "2026-11-10 11:30:00-05:00"
-    }
-  },
-  "frozen_at": "2026-11-10T23:21:06.940091"
+  "t_start": "2018-10-15 09:30:00-04:00",
+  "t_end": "2026-11-09 15:30:00-05:00",
+  "holdout_start": "2025-10-16 00:00:00-04:00",
+  "i_holdout": 12226,
+  "total_bars": 14101,
+  "protocol": "V2 quarterly walk-forward OOF + Research Holdout"
 }

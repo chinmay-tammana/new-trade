@@ -1,0 +1,18 @@
+{
+  "data_start": "2018-10-15 09:30:00-04:00",
+  "data_end": "2026-11-09 15:30:00-05:00",
+  "freeze_date": "2026-11-09",
+  "test_day": "NOT_SPECIFIED",
+  "gs_total_bars": 14101,
+  "synchronized_bars": 14084,
+  "kept_context_symbols": [
+    "SPY",
+    "XLF",
+    "JPM",
+    "MS",
+    "BAC",
+    "TLT",
+    "VIXY"
+  ],
+  "frozen_at": "2026-11-10T18:44:20.293380+00:00"
+}

@@ -123,13 +123,13 @@ Earlier 2-year run: test set 587 eligible hourly candles; 114 Up signals, 0 Down
   - [x] Record v1 result and causes in `progress.md`
   - [x] Commit and push V2.0 setup
 
-- [ ] **V2.1: Data Expansion & Ingestion**
-  - [ ] Print system date/time and diagnose why v1 ended at 2025-10-15
-  - [ ] Re-run Alpaca availability test on recent dates (verify SIP data)
-  - [ ] Extend history to 8 years (Nov 2018 onward, 30 buffer days, monthly resumable chunks)
-  - [ ] Add context symbols: SPY, XLF, JPM, MS, BAC, TLT, VIXY; resample to 1h; drop symbols losing >2% GS bars
-  - [ ] Drop incomplete bars; save `data_end` to `configs/data_freeze.json`; set `freeze_date` and `test_day` in `configs/config.py`
-  - [ ] Re-run audit; update dataset card & data dictionary
+- [x] **V2.1: Data Expansion & Ingestion**
+  - [x] Print system date/time and diagnose why v1 ended at 2025-10-15 (System time 2026-11-10; v1 stopped at 2025-10 in docs due to project brief spec, but Alpaca SIP feed is fully available through 2026-11-10)
+  - [x] Re-run Alpaca availability test on recent dates (Verified 736 bars on recent date)
+  - [x] Extend history to 8 years (Oct 2018 onward, 30 buffer days, monthly resumable chunks; 14,101 GS 1h bars)
+  - [x] Add context symbols: SPY, XLF, JPM, MS, BAC, TLT, VIXY; resample to 1h; drop symbols losing >2% GS bars (All 7 kept; max lost: MS 0.07%, BAC 0.04%, TLT 0.04%, VIXY 0.04%, SPY/XLF/JPM 0.00%)
+  - [x] Drop incomplete bars; save `data_end` to `configs/data_freeze.json`; set `freeze_date` and `test_day` in `configs/config.py` (data_end: 2026-11-09 15:30:00-05:00, 14,084 synchronized bars)
+  - [x] Re-run audit; update dataset card & data dictionary (All 8 symbols audited, 0 NaNs, 0 zero vol, yfinance parity confirmed)
 
 - [ ] **V2.2: Rich Causal Feature Engineering**
   - [ ] Peers, rates, vol features (JPM, MS, BAC, TLT, VIXY returns, gs_minus_peers, xlf-relative)
