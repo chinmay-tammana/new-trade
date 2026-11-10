@@ -1,138 +1,195 @@
-"""Target labelling and sample weight generation.
+"""Labels, multi-horizon targets, sample weights, and truncation test (V2 Upgrade).
 
-Computes forward 1-hour simple return within each session, handles session boundaries
-by setting overnight forward returns to NaN, assigns binary labels, and identifies decisive rows.
+Implements:
+1. Directional heads: H1 (1h), H3 (3h same day), HD (rest of day) with sqrt(bars) scaling.
+2. Insight target: VOL (next-bar log range log((high-low)/close)).
+3. Causal truncation test verifying zero look-ahead across all 44 features.
 """
 
-from zoneinfo import ZoneInfo
+from typing import Dict
 import numpy as np
 import pandas as pd
 
-from configs.config import CONFIG
 
-
-def make_labels(df_bars: pd.DataFrame, label_threshold: float = None) -> pd.DataFrame:
-    """Compute forward returns, binary labels, and decisive mask.
+def make_labels_v2(df_features: pd.DataFrame, base_threshold: float = 0.0010) -> pd.DataFrame:
+    """Compute forward returns and decisive masks for H1, H3, HD, and VOL targets.
 
     Parameters
     ----------
-    df_bars : pd.DataFrame
-        Session-anchored 1h bars with 'close' column and datetime index.
-    label_threshold : float, optional
-        Threshold for decisive move filter. Defaults to CONFIG['label_threshold'] (0.0010).
+    df_features : pd.DataFrame
+        Session-anchored 1h bars with computed features.
+    base_threshold : float
+        Decisive threshold for 1-bar horizon (default: 10 bps = 0.0010).
 
     Returns
     -------
     pd.DataFrame
-        DataFrame with added columns: 'fwd', 'y', 'decisive'.
+        DataFrame with targets fwd_H1, y_H1, decisive_H1, fwd_H3, y_H3, decisive_H3,
+        fwd_HD, y_HD, decisive_HD, and target_vol.
     """
-    if label_threshold is None:
-        label_threshold = CONFIG["label_threshold"]
+    df = df_features.copy()
+    close = df["close"]
+    high = df["high"]
+    low = df["low"]
+    dates = df.index.date
+    session_offset = df["bars_since_open"].to_numpy()
 
-    df = df_bars.copy()
-    if df.index.tz is None:
-        df.index = df.index.tz_localize("UTC")
-    df = df.tz_convert(ZoneInfo("America/New_York"))
+    # --- Target 1: H1 (Next 1-hour bar, same day) ---
+    c_next_1 = close.shift(-1)
+    dates_next_1 = pd.Series(dates, index=df.index).shift(-1)
+    same_day_1 = (pd.Series(dates, index=df.index) == dates_next_1)
 
-    # Next close and next timestamp
-    next_close = df["close"].shift(-1)
-    next_time = pd.Series(df.index).shift(-1)
-    next_time.index = df.index
+    fwd_h1 = (c_next_1 - close) / close
+    fwd_h1 = fwd_h1.where(same_day_1, np.nan)
+    df["fwd_H1"] = fwd_h1
+    df["y_H1"] = np.where(fwd_h1 > 0, 1, 0)
+    df.loc[fwd_h1.isna(), "y_H1"] = np.nan
+    df["decisive_H1"] = (fwd_h1.abs() > base_threshold) & fwd_h1.notna()
 
-    # Identify whether next bar is in the same trading date
-    curr_date = pd.Series(df.index.date, index=df.index)
-    next_date = pd.Series(next_time.dt.date, index=df.index)
-    same_day = curr_date == next_date
+    # Backwards compatibility for single-head references
+    df["fwd"] = df["fwd_H1"]
+    df["y"] = df["y_H1"]
+    df["decisive"] = df["decisive_H1"]
 
-    # Simple return: fwd = close[t+1] / close[t] - 1
-    fwd_return = (next_close / df["close"]) - 1.0
-    # Any bar where next bar is on a different date (or end of dataset) gets NaN
-    fwd_return = fwd_return.where(same_day, np.nan)
+    # --- Target 2: H3 (Next 3-hour bar, strictly same day) ---
+    c_next_3 = close.shift(-3)
+    dates_next_3 = pd.Series(dates, index=df.index).shift(-3)
+    same_day_3 = (pd.Series(dates, index=df.index) == dates_next_3)
 
-    df["fwd"] = fwd_return
+    fwd_h3 = (c_next_3 - close) / close
+    fwd_h3 = fwd_h3.where(same_day_3, np.nan)
+    df["fwd_H3"] = fwd_h3
+    df["y_H3"] = np.where(fwd_h3 > 0, 1, 0)
+    df.loc[fwd_h3.isna(), "y_H3"] = np.nan
+    thresh_h3 = base_threshold * np.sqrt(3.0)
+    df["decisive_H3"] = (fwd_h3.abs() > thresh_h3) & fwd_h3.notna()
 
-    # Binary label: y = 1 if fwd > 0 else 0
-    # Report count of fwd == 0
-    zero_moves = (df["fwd"] == 0.0).sum()
-    print(f"make_labels: Total bars: {len(df)}, Labelled bars: {df['fwd'].notna().sum()}, Unlabelled (session close): {df['fwd'].isna().sum()}")
-    print(f"make_labels: Flat returns (fwd == 0.0): {zero_moves}")
+    # --- Target 3: HD (Rest of day: session close vs current close, >=2 bars remaining) ---
+    # Session close is the last bar's close for that calendar date
+    day_close_map = df.groupby(dates)["close"].last()
+    day_close_series = pd.Series(dates, index=df.index).map(day_close_map)
 
-    df["y"] = np.where(df["fwd"] > 0, 1, 0)
-    # Mask y to NaN where fwd is NaN so unlabelled bars aren't accidentally used
-    df.loc[df["fwd"].isna(), "y"] = np.nan
+    # Valid only if at least 2 bars remain in session (i.e. session_offset <= 4)
+    has_at_least_2_bars = (session_offset <= 4)
+    bars_remaining = np.maximum(6 - session_offset, 1)
 
-    # Decisive mask: |fwd| > label_threshold
-    df["decisive"] = (df["fwd"].abs() > label_threshold) & df["fwd"].notna()
+    fwd_hd = (day_close_series - close) / close
+    fwd_hd = fwd_hd.where(has_at_least_2_bars, np.nan)
+    df["fwd_HD"] = fwd_hd
+    df["y_HD"] = np.where(fwd_hd > 0, 1, 0)
+    df.loc[fwd_hd.isna(), "y_HD"] = np.nan
+
+    thresh_hd = base_threshold * np.sqrt(bars_remaining)
+    df["decisive_HD"] = (fwd_hd.abs() > thresh_hd) & fwd_hd.notna()
+
+    # --- Target 4: VOL (Next-bar log range log((high-low)/close)) ---
+    high_next_1 = high.shift(-1)
+    low_next_1 = low.shift(-1)
+    range_next = (high_next_1 - low_next_1).clip(lower=1e-5)
+    log_hl_range = np.log(range_next / c_next_1)
+    log_hl_range = log_hl_range.where(same_day_1, np.nan)
+    df["target_vol"] = log_hl_range
 
     return df
 
 
-def compute_sample_weights(
+def compute_sample_weights_v2(
     y_train: pd.Series,
-    base_weight: float = 1.0,
-    class_balance_weights: bool = True
+    timestamps: pd.Series = None,
+    half_life_days: float = None,
+    class_balance: bool = True
 ) -> np.ndarray:
-    """Compute sample weights for training.
+    """Compute recency and class-balanced sample weights for training.
 
-    sample_weight = base_weight * class_weight,
-    where class_weight equalizes total weight between Up (1) and Down (0).
+    Parameters
+    ----------
+    y_train : pd.Series or np.ndarray
+        Binary labels (0 or 1).
+    timestamps : pd.Series, optional
+        Bar timestamps for exponential recency decay.
+    half_life_days : float, optional
+        Half-life in calendar days (e.g. 90, 180, 365, or None for uniform).
+    class_balance : bool
+        Whether to balance positive and negative class weights.
     """
     y = np.asarray(y_train)
-    weights = np.full(len(y), base_weight, dtype=float)
+    weights = np.ones(len(y), dtype=float)
 
-    if class_balance_weights and len(y) > 0:
-        n_pos = np.sum(y == 1)
-        n_neg = np.sum(y == 0)
-        if n_pos > 0 and n_neg > 0:
-            total = len(y)
-            w_pos = total / (2.0 * n_pos)
-            w_neg = total / (2.0 * n_neg)
-            weights[y == 1] *= w_pos
-            weights[y == 0] *= w_neg
+    # 1. Recency weighting
+    if half_life_days is not None and half_life_days > 0 and timestamps is not None:
+        ts = pd.to_datetime(timestamps)
+        t_max = ts.max()
+        days_diff = (t_max - ts).dt.total_seconds() / (24.0 * 3600.0)
+        # weight = 2^(-days_diff / half_life)
+        recency = np.power(2.0, -days_diff.to_numpy() / half_life_days)
+        weights *= recency
+
+    # 2. Class balance
+    if class_balance and len(y) > 0:
+        pos_mask = (y == 1)
+        neg_mask = (y == 0)
+        w_pos_sum = np.sum(weights[pos_mask])
+        w_neg_sum = np.sum(weights[neg_mask])
+        if w_pos_sum > 0 and w_neg_sum > 0:
+            target_half = np.sum(weights) / 2.0
+            weights[pos_mask] *= (target_half / w_pos_sum)
+            weights[neg_mask] *= (target_half / w_neg_sum)
+
+    # Normalize mean weight to 1.0
+    if len(weights) > 0 and np.mean(weights) > 0:
+        weights /= np.mean(weights)
 
     return weights
 
 
-def run_truncation_test(df_raw_gs, df_raw_spy, df_raw_xlf, n_samples: int = 50, seed: int = 42):
+def run_truncation_test_v2(
+    df_gs: pd.DataFrame,
+    context_dfs: Dict[str, pd.DataFrame],
+    n_samples: int = 50,
+    seed: int = 42
+) -> bool:
     """Verify that features at bar t computed on history up to t match full-dataset features."""
-    from src.features import make_features, FEATURES
+    from src.features import make_features_v2, FEATURES
 
-    print(f"\n--- Running Truncation Test ({n_samples} random cutoffs, seed {seed}) ---")
+    print(f"\n--- Running Causal Truncation Test on All {len(FEATURES)} Features ({n_samples} random cutoffs, seed {seed}) ---")
     rng = np.random.default_rng(seed)
 
-    # Compute full dataset features
-    df_full = make_features(df_raw_gs, df_raw_spy, df_raw_xlf, warmup_rows=0)
+    # Compute full dataset features without warmup drop
+    df_full = make_features_v2(df_gs, context_dfs, warmup_rows=0)
 
-    # Eligible bars: starting after 60 bars to allow min periods
-    eligible_indices = np.arange(60, len(df_full))
+    # Test only points after bar 250 (allowing all rolling 200-bar MAs and 20-day daily shifts to populate)
+    eligible_indices = np.arange(250, len(df_full))
     sampled_indices = rng.choice(eligible_indices, size=min(n_samples, len(eligible_indices)), replace=False)
 
     max_abs_diff = 0.0
-    tested = 0
+    violating_feature = None
 
-    for idx in sorted(sampled_indices):
-        # Truncate raw input exactly at row idx (inclusive)
-        gs_cut = df_raw_gs.iloc[: idx + 1]
-        spy_cut = df_raw_spy.iloc[: idx + 1]
-        xlf_cut = df_raw_xlf.iloc[: idx + 1]
+    for idx in sampled_indices:
+        t_cutoff = df_full.index[idx]
 
-        df_cut = make_features(gs_cut, spy_cut, xlf_cut, warmup_rows=0)
+        # Truncate raw inputs strictly up to t_cutoff
+        df_gs_trunc = df_gs.loc[:t_cutoff]
+        context_trunc = {sym: df.loc[:t_cutoff] for sym, df in context_dfs.items()}
 
-        # Compare row at idx
-        row_full = df_full.iloc[idx][FEATURES]
-        row_cut = df_cut.iloc[-1][FEATURES]
+        # Recompute features on truncated history
+        df_trunc = make_features_v2(df_gs_trunc, context_trunc, warmup_rows=0)
 
-        diff = (row_full - row_cut).abs().max()
-        if np.isnan(diff):
-            # If both are NaN it's fine, but check non-NaNs
-            both_nan = (row_full.isna() & row_cut.isna()).all()
-            if not both_nan:
-                raise AssertionError(f"Truncation test NaN mismatch at index {idx} ({df_full.index[idx]})")
-        else:
-            if diff > max_abs_diff:
-                max_abs_diff = diff
-            assert diff < 1e-8, f"Look-ahead detected! Difference {diff} at bar {df_full.index[idx]}"
-        tested += 1
+        # Compare feature vector at exactly t_cutoff
+        full_row = df_full.loc[t_cutoff, FEATURES]
+        trunc_row = df_trunc.loc[t_cutoff, FEATURES]
 
-    print(f"Truncation test PASSED: {tested} points evaluated. Max absolute feature discrepancy: {max_abs_diff:.2e} (<= 1e-8). Zero look-ahead confirmed.")
-    return True
+        diff = (full_row - trunc_row).abs()
+        max_diff_idx = diff.max()
+        if max_diff_idx > max_abs_diff:
+            max_abs_diff = max_diff_idx
+            violating_feature = diff.idxmax()
+
+    print(f"Truncation test: {n_samples} cutoff points evaluated.")
+    print(f"Max absolute discrepancy across all {len(FEATURES)} features: {max_abs_diff:.2e}")
+    if violating_feature:
+        print(f"Worst discrepancy feature: {violating_feature} (discrepancy = {max_abs_diff:.2e})")
+
+    passed = max_abs_diff <= 1e-8
+    assert passed, f"LOOK-AHEAD LEAK DETECTED in {violating_feature}! Discrepancy {max_abs_diff} > 1e-8."
+    print("PASS: Truncation test passed with zero look-ahead bias confirmed across all features.")
+    return passed

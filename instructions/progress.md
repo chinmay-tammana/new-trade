@@ -131,13 +131,13 @@ Earlier 2-year run: test set 587 eligible hourly candles; 114 Up signals, 0 Down
   - [x] Drop incomplete bars; save `data_end` to `configs/data_freeze.json`; set `freeze_date` and `test_day` in `configs/config.py` (data_end: 2026-11-09 15:30:00-05:00, 14,084 synchronized bars)
   - [x] Re-run audit; update dataset card & data dictionary (All 8 symbols audited, 0 NaNs, 0 zero vol, yfinance parity confirmed)
 
-- [ ] **V2.2: Rich Causal Feature Engineering**
-  - [ ] Peers, rates, vol features (JPM, MS, BAC, TLT, VIXY returns, gs_minus_peers, xlf-relative)
-  - [ ] Intrabar features from 1-min bars (realized_vol_1m, up_minute_ratio, clv, signed_volume_ratio, last15_ret)
-  - [ ] Levels and trend features (dist_prev_close/high/low in ATR units, dist_session_vwap, ret_1d/5d/20d, ma_dist_50h/200h, efficiency_ratio_20, bars_since_open/close)
-  - [ ] Organize `FEATURE_GROUPS` dict for group ablations
-  - [ ] Document live 1m requirements and SIP vs IEX differences in `docs/`
-  - [ ] Pass causal truncation test for all new features
+- [x] **V2.2: Rich Causal Feature Engineering**
+  - [x] Peers, rates, vol features (JPM, MS, BAC, TLT, VIXY returns, gs_minus_peers, xlf-relative)
+  - [x] Intrabar features from 1-min bars (realized_vol_1m, up_minute_ratio, clv, signed_volume_ratio, last15_ret)
+  - [x] Levels and trend features (dist_prev_close/high/low in ATR units, dist_session_vwap, ret_1d/5d/20d, ma_dist_50h/200h, efficiency_ratio_20, bars_since_open/close)
+  - [x] Organize `FEATURE_GROUPS` dict for group ablations (9 groups, 51 features)
+  - [x] Document live 1m requirements and SIP vs IEX differences in `docs/user_guide.md` & `docs/dataset_card.md`
+  - [x] Pass causal truncation test for all new features (50 random cutoffs, max diff 0.00e+00)
 
 - [ ] **V2.3: Multi-Horizon Targets & Insight Heads**
   - [ ] Direction heads: H1 (1h), H3 (3h same day), HD (rest of day); decisive thresholds scale with sqrt(bars)

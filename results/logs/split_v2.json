@@ -1,0 +1,23 @@
+{
+  "dataset_start": "2018-11-26 09:30:00-05:00",
+  "dataset_end": "2026-11-09 15:30:00-05:00",
+  "total_bars": 13884,
+  "pre_holdout_bars": 12004,
+  "gap_bars": 8,
+  "holdout_bars": 1872,
+  "holdout_start": "2025-10-16 00:00:00-04:00",
+  "freeze_date": "2026-11-09 16:00:00-05:00",
+  "n_features": 51,
+  "feature_groups": {
+    "returns": 6,
+    "momentum": 3,
+    "vol": 4,
+    "volume": 1,
+    "time": 5,
+    "market": 6,
+    "peers": 11,
+    "intrabar": 5,
+    "levels": 10
+  },
+  "frozen_at": "2026-11-10T13:51:23.584268-05:00"
+}

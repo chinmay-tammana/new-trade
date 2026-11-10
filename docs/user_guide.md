@@ -74,7 +74,24 @@ Trading models trained on technical and benchmark momentum are fragile to macroe
 
 ---
 
-## 4. Friction and Capital Management
+## 4. Live Data Requirements: 1-Minute Microstructure & Volume Feeds
+
+1. **Live 1-Minute Bar Feed Requirement**:
+   The V2 feature matrix requires live 1-minute OHLCV bars inside each hour to compute the five microstructure features:
+   - `realized_vol_1m` (intrabar standard deviation of 1-minute returns)
+   - `up_minute_ratio` (fraction of green 1-minute candles)
+   - `clv` (Close Location Value)
+   - `signed_volume_ratio` (order volume directionality)
+   - `last15_ret` (price momentum over final 15 minutes of the hour)
+   A live trading backend must buffer 1-minute bars during the hour and aggregate them at minute 59.
+
+2. **IEX vs. Consolidated SIP Volume**:
+   - The indicator is trained on the consolidated **SIP feed** (capturing CTA/UTP tapes across all US exchanges: NYSE, Nasdaq, Cboe, ARCA, IEX).
+   - If a live trader executes using a free broker API that defaults to an **IEX-only feed**, observed volume may be 10x to 50x lower than SIP consolidated volume. While ratio features like `signed_volume_ratio` and `up_minute_ratio` normalize volume, `rvol` may exhibit noise if market share on IEX shifts. It is strongly recommended to use a consolidated SIP feed for live paper inference.
+
+---
+
+## 5. Friction and Capital Management
 - **Transaction Costs**: Real-world execution involves bid-ask spread and broker exchange fees. Backtests assume a conservative **5.0 bps ($0.0005$)** friction per round trip. In live paper execution, if the bid-ask spread on `GS` exceeds $0.15 (approx. 3 bps on a \$500 stock), cancel the entry.
 - **Position Sizing**: Limit each trade to no more than 1–2% of allocated paper trading capital. Never pyramid or double down on losing candles.
 - **Stop-Loss Discipline**: Although the theoretical model evaluates time-based exits (exit after 1 hour), paper traders should maintain a hard stop-loss of -50 bps (-0.50%) to protect against intraday market shocks.
