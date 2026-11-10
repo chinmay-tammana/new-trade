@@ -8,20 +8,20 @@ Earlier 2-year run: test set 587 eligible hourly candles; 114 Up signals, 0 Down
 
 ## Phase Checklist
 
-- [ ] **Phase 0: Setup**
-  - [ ] Repository layout created (`configs/`, `data/raw/`, `data/processed/`, `src/`, `results/tables/`, `results/figures/`, `results/logs/`, `models/`, `report/`, `slides/`, `docs/`, `tests/`, `instructions/`, `archive/`)
-  - [ ] Configuration created (`configs/config.py`)
-  - [ ] Git repository initialized, `.gitignore` created before first commit
-  - [ ] Secret detection tool created (`src/check_secrets.py`) and verified
-  - [ ] Virtual environment and dependencies installed (`requirements.txt`)
-  - [ ] Remote `origin` configured (`https://github.com/chinmay-tammana/new-trade.git`)
-  - [ ] Initial commit and push
+- [x] **Phase 0: Setup**
+  - [x] Repository layout created (`configs/`, `data/raw/`, `data/processed/`, `src/`, `results/tables/`, `results/figures/`, `results/logs/`, `models/`, `report/`, `slides/`, `docs/`, `tests/`, `instructions/`, `archive/`)
+  - [x] Configuration created (`configs/config.py`)
+  - [x] Git repository initialized, `.gitignore` created before first commit
+  - [x] Secret detection tool created (`src/check_secrets.py`) and verified
+  - [x] Virtual environment and dependencies installed (`requirements.txt`)
+  - [x] Remote `origin` configured (`https://github.com/chinmay-tammana/new-trade.git`)
+  - [x] Initial commit and push completed
 
-- [ ] **Phase 1: Problem Definition and Literature**
-  - [ ] `docs/problem_definition.md` created with pre-registered criteria
-  - [ ] `docs/literature_survey.md` created with verified citations
-  - [ ] Project title finalized
-  - [ ] Phase 1 committed and pushed before training code
+- [x] **Phase 1: Problem Definition and Literature**
+  - [x] `docs/problem_definition.md` created with pre-registered criteria
+  - [x] `docs/literature_survey.md` created with verified citations
+  - [x] Project title finalized: "Next-Hour Direction Prediction for Goldman Sachs Stock Using Calibrated XGBoost on Hourly OHLCV Data"
+  - [x] Phase 1 committed and pushed before training code
 
 - [ ] **Phase 2: Data Collection and Audit**
   - [ ] Alpaca credentials verified from `.env`
