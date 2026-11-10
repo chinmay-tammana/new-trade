@@ -1,0 +1,3 @@
+model,empirical_coverage,mean_width_bps
+"Adaptive Quantile Band (q=0.10, 0.90)",0.7281606823497042,82.66621649166419
+Constant Empirical Band,0.7999724858990233,95.49637307815381

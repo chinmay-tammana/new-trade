@@ -1,0 +1,40 @@
+{
+  "primary_horizon": "H1",
+  "winning_model": "Ensemble (3-way)",
+  "best_xgb_hyperparameters": {
+    "max_depth": 2,
+    "learning_rate": 0.01,
+    "n_estimators": 200,
+    "subsample": 1.0,
+    "colsample_bytree": 1.0,
+    "reg_lambda": 5.0,
+    "min_child_weight": 5,
+    "half_life_days": null
+  },
+  "signal_rule": {
+    "coverage": 0.3,
+    "q_lo": 0.49039070402502494,
+    "q_hi": 0.5084378717638838,
+    "n_up_oof": 1091,
+    "n_down_oof": 1091,
+    "accuracy_oof": 0.5192483959670028,
+    "wilson_ci_oof": [
+      0.4982692347523725,
+      0.5401599018444416
+    ]
+  },
+  "vol_terciles": {
+    "tercile_33": -5.39459924697876,
+    "tercile_67": -5.060052762985229
+  },
+  "regime_thresholds": {
+    "eff_chop_threshold": 0.1674355944588228
+  },
+  "ece_pre_holdout": 0.01914013151803036,
+  "final_refit": {
+    "data_end": "2026-11-09",
+    "total_bars": 13884,
+    "q_lo": 0.43427959108206615,
+    "q_hi": 0.563232433386711
+  }
+}

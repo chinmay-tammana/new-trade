@@ -14,6 +14,31 @@ from configs.config import CONFIG
 from src.preprocessing import create_linear_pipeline
 
 
+class EnsembleV2:
+    """Trained 3-way ensemble combining XGBoost, HistGradientBoosting, and ElasticNet."""
+
+    def __init__(self, m_xgb, m_hgb, m_enet, scaler, calib_xgb, calib_hgb, calib_enet):
+        self.m_xgb = m_xgb
+        self.m_hgb = m_hgb
+        self.m_enet = m_enet
+        self.scaler = scaler
+        self.calib_xgb = calib_xgb
+        self.calib_hgb = calib_hgb
+        self.calib_enet = calib_enet
+
+    def predict_proba(self, X: np.ndarray) -> np.ndarray:
+        X_scaled = self.scaler.transform(X)
+        p_raw_xgb = self.m_xgb.predict_proba(X)[:, 1]
+        p_raw_hgb = self.m_hgb.predict_proba(X)[:, 1]
+        p_raw_enet = self.m_enet.predict_proba(X_scaled)[:, 1]
+
+        p_cal_xgb = self.calib_xgb.predict_proba(p_raw_xgb)
+        p_cal_hgb = self.calib_hgb.predict_proba(p_raw_hgb)
+        p_cal_enet = self.calib_enet.predict_proba(p_raw_enet)
+
+        return (p_cal_xgb + p_cal_hgb + p_cal_enet) / 3.0
+
+
 def build_default_xgboost(random_state: int = 42) -> XGBClassifier:
     """Build default-ish shallow, regularized XGBoost model for Stage A (S0)."""
     return XGBClassifier(

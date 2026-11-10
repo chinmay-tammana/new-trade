@@ -1,0 +1,8 @@
+timestamp,close,direction,confidence,vol_class,band_low_bps,band_high_bps,regime,fwd_ret_bps,outcome
+2026-11-06 09:30:00-05:00,880.085,No Signal,52.0%,High,-76.5,+90.5,Chop,-29.3,Abstained
+2026-11-06 10:30:00-05:00,877.51,No Signal,54.1%,High,-73.9,+56.2,Chop,+50.8,Abstained
+2026-11-06 11:30:00-05:00,881.965,No Signal,51.8%,High,-83.4,+52.1,Chop,-86.7,Abstained
+2026-11-06 12:30:00-05:00,874.315,No Signal,56.1%,High,-68.6,+71.2,Chop,-46.8,Abstained
+2026-11-06 13:30:00-05:00,870.22,No Signal,50.1%,High,-51.0,+59.9,Downtrend,-1.6,Abstained
+2026-11-06 14:30:00-05:00,870.08,Down,65.5%,Normal,-43.3,+37.0,Downtrend,-49.9,Correct (Down)
+2026-11-06 15:30:00-05:00,865.74,Down,56.8%,High,-49.2,+63.5,Downtrend,NaN,Unlabelled (Session Close)

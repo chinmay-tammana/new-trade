@@ -1,0 +1,12 @@
+=== V2 INTEGRITY AND REPRODUCIBILITY AUDIT REPORT ===
+Timestamp: 2026-11-11 00:38:37.413115
+
+1. Shuffled-Label Null Test: PASS (Null Acc = 49.49%, Log-Loss = 0.69475)
+2. Time-Shift Sensitivity:   PASS (Delta Log-Loss = +0.00072)
+3. Two-Sided Synthetic Test: PASS (Both Up and Down generated on synthetic probabilities)
+4. Causal Truncation Test:   PASS (50 cutoffs, max diff = 0.00e+00 across 51 features)
+5. Pre-Holdout Ledger Audit: PASS (0 pre-holdout fits touched Research Holdout)
+6. Live Window Divergence:   200 bars diff = 9.12e-07, 500 bars diff = 9.70e-13
+7. Git History Scan:         PASS (0 secrets, 0 data files tracked)
+
+FINAL INTEGRITY AUDIT VERDICT: ALL CHECKS PASSED

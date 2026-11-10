@@ -119,9 +119,13 @@ def compute_sample_weights_v2(
     if half_life_days is not None and half_life_days > 0 and timestamps is not None:
         ts = pd.to_datetime(timestamps)
         t_max = ts.max()
-        days_diff = (t_max - ts).dt.total_seconds() / (24.0 * 3600.0)
+        td = t_max - ts
+        if hasattr(td, "dt"):
+            days_diff = td.dt.total_seconds() / (24.0 * 3600.0)
+        else:
+            days_diff = td.total_seconds() / (24.0 * 3600.0)
         # weight = 2^(-days_diff / half_life)
-        recency = np.power(2.0, -days_diff.to_numpy() / half_life_days)
+        recency = np.power(2.0, -np.asarray(days_diff) / float(half_life_days))
         weights *= recency
 
     # 2. Class balance
