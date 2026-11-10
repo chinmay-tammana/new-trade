@@ -1,0 +1,4 @@
+symbol,total_bars,min_timestamp,max_timestamp,monotonic_increasing,duplicate_timestamps,zero_volume_bars,nan_values,ohlc_violations
+GS,7148,2022-10-12 12:30:00-04:00,2026-11-10 11:30:00-05:00,True,0,0,0,0
+SPY,7161,2022-10-12 12:30:00-04:00,2026-11-10 11:30:00-05:00,True,0,0,0,0
+XLF,7161,2022-10-12 12:30:00-04:00,2026-11-10 11:30:00-05:00,True,0,0,0,0

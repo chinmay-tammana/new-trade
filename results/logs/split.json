@@ -1,0 +1,11 @@
+{
+  "t_start": "2022-10-12 12:30:00-04:00",
+  "t_end": "2026-11-10 11:30:00-05:00",
+  "era_days": 365,
+  "y3_start_calendar": "2024-11-10 11:30:00-05:00",
+  "y4_start_calendar": "2025-11-10 11:30:00-05:00",
+  "i3_bar_index": 3651,
+  "i4_bar_index": 5391,
+  "total_bars": 7148,
+  "interim_status": "Defined preliminary boundaries; frozen final split constructed in Phase 4."
+}

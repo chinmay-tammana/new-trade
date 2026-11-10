@@ -23,16 +23,16 @@ Earlier 2-year run: test set 587 eligible hourly candles; 114 Up signals, 0 Down
   - [x] Project title finalized: "Next-Hour Direction Prediction for Goldman Sachs Stock Using Calibrated XGBoost on Hourly OHLCV Data"
   - [x] Phase 1 committed and pushed before training code
 
-- [ ] **Phase 2: Data Collection and Audit**
-  - [ ] Alpaca credentials verified from `.env`
-  - [ ] Availability test on 1-min SIP bars completed
-  - [ ] 4 years + 30 days of 1-minute data for GS, SPY, XLF downloaded
-  - [ ] Session-anchored 1h bars constructed (09:30 to 16:00 ET)
-  - [ ] Data quality audit completed (`results/logs/data_validation.txt`, `results/tables/audit_summary.csv`)
-  - [ ] Parity check with yfinance on recent ~60 days completed
-  - [ ] `docs/dataset_card.md` and `docs/data_dictionary.md` written
-  - [ ] Audit figures generated in `results/figures/`
-  - [ ] Phase 2 committed and pushed
+- [x] **Phase 2: Data Collection and Audit**
+  - [x] Alpaca credentials verified from `.env`
+  - [x] Availability test on 1-min SIP bars completed (retrieved 330 1-min bars)
+  - [x] 4 years + 30 days of 1-minute data for GS, SPY, XLF downloaded
+  - [x] Session-anchored 1h bars constructed (09:30 to 16:00 ET, exactly 7,148 GS bars)
+  - [x] Data quality audit completed (`results/logs/data_validation.txt`, `results/tables/audit_summary.csv`)
+  - [x] Parity check with yfinance on recent ~60 days completed (corr = 0.999998, diff = 0.23 bps)
+  - [x] `docs/dataset_card.md` and `docs/data_dictionary.md` written
+  - [x] Audit figures generated in `results/figures/`
+  - [x] Phase 2 committed and pushed
 
 - [ ] **Phase 3: EDA, Features, Labels, Preprocessing**
   - [ ] Base-only EDA completed with figures in `results/figures/` and `docs/eda_findings.md`
