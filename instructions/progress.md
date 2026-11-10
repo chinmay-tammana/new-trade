@@ -53,16 +53,16 @@ Earlier 2-year run: test set 587 eligible hourly candles; 114 Up signals, 0 Down
   - [x] Baseline table generated in `results/tables/baselines_val.csv`
   - [x] Phase 4 committed and pushed
 
-- [ ] **Phase 5: Models, Training and Fine-Tuning**
-  - [ ] Stage A: Base model trained, CV sanity checked, S0 evaluated on Val
-  - [ ] Stage B Part A: 4-fold walk-forward hyperparameter search on FT (40 configs)
-  - [ ] Stage B Part B: Comparison of strategies S0, S1, S2, S3 on Val
-  - [ ] Stage C: Conventional ML comparators (Logistic Regression, Random Forest, HistGradientBoosting)
-  - [ ] Stage D: XGBoost ablations (time, context, rvol, class balance, label thresholds)
-  - [ ] Stage E: Feature importance (gain & permutation) on Val
-  - [ ] Final model chosen, saved to `models/`, fit ledger updated
-  - [ ] `results/tables/finetune_report.md` written
-  - [ ] Phase 5 committed and pushed
+- [x] **Phase 5: Models, Training and Fine-Tuning**
+  - [x] Stage A: Base model trained, CV sanity checked (CV loss: 0.7426), S0 evaluated on Val (0.70176)
+  - [x] Stage B Part A: 4-fold walk-forward hyperparameter search on FT (40 configs, best CV loss: 0.69423)
+  - [x] Stage B Part B: Comparison of strategies S0, S1, S2, S3 on Val (S2 won with 0.68953, beating constant prior by 0.00225)
+  - [x] Stage C: Conventional ML comparators (Logistic Regression: 0.69109, Random Forest: 0.69092, HistGradientBoosting: 0.69276)
+  - [x] Stage D: XGBoost ablations (time, context, rvol, class balance, label thresholds)
+  - [x] Stage E: Feature importance (gain & permutation) on Val
+  - [x] Final model chosen (XGBoost S2), saved to `models/model.joblib`, fit ledger verified leak-free
+  - [x] `results/tables/finetune_report.md` written
+  - [x] Phase 5 committed and pushed
 
 - [ ] **Phase 6: Calibration and Signal Rule**
   - [ ] Platt scaling vs Isotonic calibration fitted on Val in `src/calibrate.py`

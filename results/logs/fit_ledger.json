@@ -1,0 +1,58 @@
+[
+  {
+    "entry_id": 1,
+    "purpose": "Base model training (Stage A / Strategy S0)",
+    "first_timestamp": "2022-10-18 14:30:00-04:00",
+    "last_timestamp": "2024-11-07 14:30:00-05:00",
+    "row_count": 2233,
+    "logged_at": "2026-11-10T23:24:30.545075"
+  },
+  {
+    "entry_id": 2,
+    "purpose": "Strategy S1: Base-only with tuned parameters",
+    "first_timestamp": "2022-10-18 14:30:00-04:00",
+    "last_timestamp": "2024-11-07 14:30:00-05:00",
+    "row_count": 2233,
+    "logged_at": "2026-11-10T23:24:39.200415"
+  },
+  {
+    "entry_id": 3,
+    "purpose": "Strategy S2: Refit from scratch on Base + FT",
+    "first_timestamp": "2022-10-18 14:30:00-04:00",
+    "last_timestamp": "2025-11-07 09:30:00-05:00",
+    "row_count": 3360,
+    "logged_at": "2026-11-10T23:24:39.244660"
+  },
+  {
+    "entry_id": 4,
+    "purpose": "Strategy S3: Warm start on FT (rounds=50, lr=0.01)",
+    "first_timestamp": "2022-10-18 14:30:00-04:00",
+    "last_timestamp": "2025-11-07 09:30:00-05:00",
+    "row_count": 3360,
+    "logged_at": "2026-11-10T23:24:39.728915"
+  },
+  {
+    "entry_id": 5,
+    "purpose": "Comparator: LogisticRegression (C=0.001)",
+    "first_timestamp": "2022-10-18 14:30:00-04:00",
+    "last_timestamp": "2025-11-07 09:30:00-05:00",
+    "row_count": 3360,
+    "logged_at": "2026-11-10T23:24:39.976456"
+  },
+  {
+    "entry_id": 6,
+    "purpose": "Comparator: RandomForest ({'n_estimators': 100, 'max_depth': 3, 'min_samples_leaf': 10})",
+    "first_timestamp": "2022-10-18 14:30:00-04:00",
+    "last_timestamp": "2025-11-07 09:30:00-05:00",
+    "row_count": 3360,
+    "logged_at": "2026-11-10T23:24:43.083268"
+  },
+  {
+    "entry_id": 7,
+    "purpose": "Comparator: HistGradientBoosting ({'learning_rate': 0.02, 'max_depth': 2, 'max_iter': 100})",
+    "first_timestamp": "2022-10-18 14:30:00-04:00",
+    "last_timestamp": "2025-11-07 09:30:00-05:00",
+    "row_count": 3360,
+    "logged_at": "2026-11-10T23:24:53.259718"
+  }
+]
