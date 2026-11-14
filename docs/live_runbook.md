@@ -9,8 +9,8 @@ This operational runbook provides instructions for deploying, running, monitorin
 ### 1.1 Environment Variables
 Ensure Alpaca API credentials are set in `.env` or system environment:
 ```bash
-export APCA_API_KEY_ID="your_alpaca_key"
-export APCA_API_SECRET_KEY="your_alpaca_secret"
+export APCA_API_KEY_ID="<your_key_id>"
+export APCA_API_SECRET_KEY="<your_secret_key>"
 export APCA_API_BASE_URL="https://paper-api.alpaca.markets"
 ```
 

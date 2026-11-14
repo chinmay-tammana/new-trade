@@ -52,7 +52,8 @@ def get_db() -> LiveDatabase:
 def get_engine() -> LiveEngine:
     global ENGINE
     if ENGINE is None:
-        ENGINE = LiveEngine(feed=CONFIG.get("live_feed", "iex"), db=get_db(), live_signals_enabled=False)
+        enable_sig = os.environ.get("ENABLE_SIGNALS", "0").lower() in ("1", "true", "yes")
+        ENGINE = LiveEngine(feed=CONFIG.get("live_feed", "iex"), db=get_db(), live_signals_enabled=enable_sig)
         ENGINE.initialize_history()
     return ENGINE
 
@@ -382,7 +383,11 @@ def main():
     parser.add_argument("--replay", type=str, help="Replay trading day (YYYY-MM-DD) on accelerated clock and verify equivalence")
     parser.add_argument("--port", type=int, default=8000, help="Port to run FastAPI server (default: 8000)")
     parser.add_argument("--allow-model-change", action="store_true", help="Allow startup even if model sha256 changed")
+    parser.add_argument("--enable-signals", action="store_true", help="Override IEX parity safety gate and enable live signals")
     args = parser.parse_args()
+
+    if args.enable_signals:
+        os.environ["ENABLE_SIGNALS"] = "1"
 
     if args.replay:
         run_day_replay(args.replay)

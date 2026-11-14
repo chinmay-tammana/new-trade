@@ -34,4 +34,4 @@ python3 -c "from src.live.engine import verify_model_lock; verify_model_lock()"
 # Start server
 PORT="${PORT:-8000}"
 echo "Launching Live Indicator Server on http://localhost:${PORT}"
-exec python3 -m src.live.server --port "${PORT}"
+exec python3 -m src.live.server --port "${PORT}" "$@"
