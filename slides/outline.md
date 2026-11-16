@@ -188,13 +188,69 @@
 
 ---
 
-## Slide 16: V3 Live Production Architecture & Feed Parity
-- **Production Transition**:
-  - Free SIP feed 15-minute delay necessitates real-time IEX feed for live hourly signals.
-  - 60-day empirical parity test: Direction agreement 97.44% (PASS), but Three-class agreement 72.14% and missing minute bars 31.08% triggered pre-registered fallback.
-  - Frozen models untouched; `live_signals_enabled = False` set by default with clear UI banners.
-- **Deterministic Live Infrastructure**:
-  - Session-anchored calendar (`src/live/calendar.py`) with DST and half-day early close awareness.
-  - Immutable SQLite store (`src/live/store.py`) with WAL mode, abort triggers, and SHA-256 hash chaining.
-  - Read-only FastAPI server (`src/live/server.py`) and zero-dependency TradingView dashboard (`static/`).
-  - Live scoring CLI (`src/live/score.py`) reporting Wilson CIs, base rates, and net returns.
+## Slide 16: V3 Live Production Architecture, Feed Bias Discovery & Delayed SIP Engine
+- **Initial IEX Deployment & Gate Failure**:
+  - Thin IEX exchange volume (~2% market share) failed Parity Gate B (72.14% < 75%) and Gate C (31.08% missing minutes > 5%).
+  - Diagnostic audit (V3.4) identified severe **FEED BIAS**: depressed `up_minute_ratio` by -3.46 stds and skewed `signed_volume_ratio` by +1.32 stds, artificially creating one-sided Down signals on IEX.
+  - Swap test proved that swapping volume features to consolidated SIP restored two-sided signals (2 Up, 5 Down).
+- **Option B Switch (Delayed Consolidated SIP for Signals, IEX Display Only)**:
+  - Transitioned live signal engine to consolidated SIP tape delivered at `bar_end + 16 min` (complying with $\ge 15$-min dissemination delay).
+  - All 3 pre-registered SIP gates passed: Gate A (feature parity $1.09 \times 10^{-11} \le 10^{-6}$), Gate B (delayed SIP access 8/8 symbols), Gate C (replay equivalence 100% on 3 days).
+  - `live_signals_enabled = True` activated.
+- **Critical Measurement Integrity Notice**:
+  - The 52.25% accuracy was measured on the pre-refit model with narrow thresholds 0.490 / 0.508 (88.65% holdout coverage).
+  - The deployed rule uses refitted thresholds 0.434 / 0.563 (~30% target coverage) and has **no held-out accuracy measurement**.
+- **Monday Live Checklist**:
+  - Run `python -m src.live.doctor` before 09:00 ET (19:30 IST).
+  - Start `./run_live.sh` before 09:00 ET. First signal delivers at 10:46 ET (21:16 IST). Exactly ~6 signals per day.
+
+
+---
+
+## Slide 10: 5-Minute Horizon Pipeline (M5 Upgrade)
+- **Problem & Rationale**: Transitioned from 1-hour to 5-minute decision horizon per TA instruction. Delayed SIP (16-min lag) replaced with causal IEX real-time feed with bit-for-bit `raw_minutes` recording.
+- **Candidate Selection & Decisiveness**: Decisive threshold of 2 bps selected by walk-forward log-loss (0.68179). `xgb_depth4` selected as winning model (OOF log-loss 0.68057 vs 0.69310 constant prior).
+- **Holdout Results (6 Months)**: 150 Up, 138 Down, 9,184 No-signal. Accuracy: **67.36%** (Wilson CI `[61.75%, 72.52%]`, permutation $p = 0.0001$). Both sides outperformed market base rates.
+- **Honest Reporting**: Criterion B marked NOT MET because directional count was 150 Up / 138 Down (< 300 pre-registered), even though accuracy (67.36%) substantially exceeded the 52% target.
+- **Production Status**: Model bundle sealed and locked in `models/m5/MODEL_SHA256_m5.json`. Operational server running on `http://localhost:8000` via `./run_live_m5.sh`.
+
+---
+
+## Slide 11: M5 Coverage Expansion (V4.1-COVERAGE) & Integrity Audit
+- **Problem**: Owner decision noted excessive No-signal bars under the initial $c=0.10$ rule (~2–4 directional signals/day). Target coverage increased to **30%** ($\approx 23$ signals/day).
+- **Integrity Audit (5 Pre-Registered Fail Gates)**:
+  - Gate 1 (Shuffled-Label Null): 50.00% [PASS]
+  - Gate 2 (Time-Shift +1 Bar): 50.00% [PASS]
+  - Gate 3 (Single-Feature Leakage): Max AUC Delta 0.0591 (`gs_minus_peer_1`, AUC = 0.4409) [PASS]
+  - Gate 4 (IEX Microstructure Artifact): **ARTIFACT DETECTED**. 69.9% accuracy on IEX prints drops to **51.80%** on Consolidated SIP tape. App displays prominent red warning banner.
+  - Gate 5 (Subgroup Stability): Consistent across years (68.1%–75.5%), TOD (70%), and sides (Up 69.6%, Down 70.3%) [PASS].
+- **Rule Selection (Rule A vs Rule B)**:
+  - Fixed OOF quantiles (Rule A) achieved only 12.57% coverage on the last 20 sessions ($< 15.0\%$).
+  - **Rule B Activated**: Dynamic trailing 20-session quantiles with min margin guard $\ge 51\%$ ($q_{lo} = 0.45168$, $q_{hi} = 0.54528$).
+- **Performance Trade-Off & Tiers**:
+  - Daily directional signals increased from 1–3 to **20–27 per day** (27.8% achieved coverage on Nov 9–13).
+  - Tiers: `STRONG` ($\ge 58.4\%$ conf, 68.3% OOF / 64.4% holdout acc), `NORMAL` (57.3% acc), `WEAK` (55.0% acc).
+  - Re-derivation CLI: `python -m src.m5.apply_rule --coverage 0.30` (non-destructive, unbroken hash chain).
+
+---
+
+## Slide 12: M5 Always-Call Directional Rule (V4.2-ALWAYSCALL) & Denominator Reconciliation
+- **Owner Mandate**: "Keep No signal minimal, or at least reduce it a lot." Transitioned to Always-Call: every eligible 5-minute interval gets an Up or Down call with a conviction tier. No signal strictly limited to End-of-Day (15:55-16:00 ET), data gaps, or exact 50.0% ties.
+- **Denominator Reconciliation**:
+  - Reconciled 74,971 total pre-holdout bars with 39,766 evaluated out-of-fold bars (2-year burn-in training window of 35,205 bars).
+  - Corrected erroneous "63,041 = 70.0%" statement: 63,041 of 74,971 was 84.1%, whereas exactly 27,836 of 39,766 OOF bars were No-Signal under Rule V2.
+  - Holdout coverage was 19.3% under Rule V2 due to static quantile bounds and margin filtering.
+- **Always-Call Performance & 4 Pre-Registered Checks**:
+  - **Check (a) All-Bar Accuracy**: Holdout accuracy **53.39%** [52.38%, 54.39%] beats larger base rate 50.67% with permutation $p = 0.00020 < 0.05$ [PASS].
+  - **Check (b) Monotonic Tiers**: WEAK $\le$ NORMAL $\le$ STRONG verified on both OOF and Holdout [PASS].
+    - `STRONG` ($\ge 58.1\%$): 63.58% OOF, **60.01% Holdout**, **+1.57 bps** net @ 2bps.
+    - `NORMAL` ($52.1\%-58.1\%$): 53.85% OOF, **53.26% Holdout**.
+    - `WEAK` ($\le 52.1\%$): 51.12% OOF, **50.34% Holdout**, -0.82 bps net @ 2bps ("close to a coin flip").
+  - **Check (c) Calibration ECE**: OOF ECE = 0.0069, Holdout ECE = 0.0127 (both $\le 0.030$) [PASS].
+  - **Check (d) Two-Sided Output**: 19,695 Up / 20,071 Down on OOF; 4,814 Up / 4,658 Down on Holdout [PASS].
+- **Live UI & Operational Proof**:
+  - Live page shows side-by-side ALL vs. STRONG accuracy with Wilson CIs, timeline arrow chips with tier shading, and filter chips (`All | NORMAL + STRONG | STRONG only`).
+  - Red warning card visible at top: IEX microstructure artifact disclosure ($\Delta = +18.1\%$).
+  - Full-day coverage verified: 73 directional calls/day, 1 EOD bar (98.6% coverage on Nov 13).
+  - Playwright headless browser tests passed 100% across 4 viewports with zero console errors. Cryptographic ledger verified unbroken (2,738 rows).
+

@@ -56,6 +56,19 @@ The operational decision rule in `model-v2` is **strictly two-sided**, driven by
 ### 1.6 Historical Conditioning (`historical_hit_rate_for_this_hour_and_side`)
 - The historical out-of-fold win rate for signals emitted during the specific time of day (e.g. 10:30 bar) and direction (Up or Down). Provides empirical base-rate grounding.
 
+### 1.7 Regulatory Delay & How to Read "Delivered At"
+- **Option B Architecture**: The production engine utilizes **Delayed Consolidated SIP** for all 8 symbols to eliminate the thin volume bias inherent to IEX (~2% market share).
+- **15-Minute Regulatory Delay**: Under SEC regulations, free developer consolidated SIP data carries a mandatory 15-minute dissemination delay.
+- **Delivery Arithmetic**:
+  - A 1-hour candle closes at `:30` past the hour (e.g. `10:30 ET`).
+  - The live engine fetches consolidated 1-minute bars with $\ge 15$-minute end lag at **`bar_end + 16 min`** (e.g. `10:46 ET`).
+  - Signal computation occurs in $< 50\text{ ms}$, delivering the signal to the dashboard and ledger at **`10:46 ET (21:16 IST)`**.
+- **How to Read the Dashboard Headline & Table**:
+  - The dashboard headline explicitly displays: *"Signal for the hour starting 09:30 ET. Bar closed 10:30, delivered 10:46 ET. This hour is already 16 min old."*
+  - The signal evaluates price action for the **remaining 44 minutes** of the subsequent hourly candle (e.g. `10:46` to `11:30 ET`).
+  - For the 14:30–15:30 candle, delivery occurs at `15:46 ET`, covering the remaining 14 minutes before the 16:00 market close.
+  - The final end-of-day bar (`15:30` to `16:00 ET`) closes the session and is classified as `No signal (end of day)` without evaluation.
+
 ---
 
 ## 2. When NOT to Trust the Insight Outputs
@@ -120,3 +133,40 @@ The V3 upgrade provides a deterministic live engine, read-only REST API, and Tra
 - **Live Parity Safeguard**: The system monitors IEX feed parity against consolidated SIP bars. Because IEX captures only 2-3% of consolidated volume, Gate B (72.14% < 75%) and Gate C (31.08% missing minutes > 5%) triggered the fallback protocol: live signals are set to `live_signals_enabled = False` by default with clear UI banners.
 - **STRONG Confidence Tier**: The dashboard highlights trades meeting the pre-holdout OOF 75th percentile confidence threshold ($\ge 52.04\%$).
 - **Live Scoring**: Run `python -m src.live.score --since YYYY-MM-DD` at the end of each session to calculate rolling live performance, Wilson CIs, and net returns.
+
+---
+
+## 6. How to Read and Use the Signal Log (V3.6 Single-Source-of-Truth Day View)
+
+The dashboard includes a dedicated, clean **Signal Log Panel** positioned directly below the candlestick chart, offering a single-source-of-truth day view specifically designed for day-by-day demonstration and auditing.
+
+### 6.1 Annotated Example Row
+
+```text
+HOUR PREDICTED (ET)   ISSUED (ET | IST)          CALL          STRENGTH   VOL AND BAND             PRICE MOVE                   RESULT       SOURCE
+10:30-11:30           10:46 | 21:16 (replayed)   ▲ UP 63%      STRONG     High | -55.2 / +83.5 bps $907.63 → $909.34 (+0.21%)   ✔ Correct    OUT-OF-SAMPLE
+```
+
+1. **HOUR PREDICTED (ET)**: The forward 1-hour window being predicted (`10:30-11:30`). The signal evaluates data from the preceding candle (09:30–10:30) and predicts the move of this target window. For the afternoon bar starting at 14:30, it displays `15:30-16:00 (close)`; for the final closing bar it displays `16:00 (market closed)`.
+2. **ISSUED (ET | IST)**: The exact dissemination timestamp when delayed SIP data arrived ($\text{bar\_close} + 16\text{ min}$). Dual timezone display gives Eastern Time and Indian Standard Time with exact `zoneinfo` conversion. If computed retrospectively during backfill/replay, it is styled in grey italics with `(replayed)`; for true real-time live rows it displays normal text.
+3. **CALL**: The decision pill showing direction and calibrated confidence (`▲ UP 63%`, `▼ DOWN 62%`, or `– NO SIGNAL`). For abstentions, it clearly specifies the operational reason (`inside neutral band`, `end of day`, or `data gap`) and NEVER shows a confidence or STRONG tag.
+4. **STRENGTH**: Tagged `STRONG` if the model confidence falls in the top quartile ($\ge 52.0\%$).
+5. **VOL AND BAND**: The forward volatility class and the 10th-to-90th percentile expected return range in basis points (`High | -55.2 / +83.5 bps`).
+6. **PRICE MOVE**: The actual open-to-close price action of Goldman Sachs stock across the predicted hour, showing initial price, ending price, and percentage change (`$907.63 → $909.34 (+0.21%)`), or `pending`.
+7. **RESULT**: Immediate visual resolution: `✔ Correct` (prediction matched price move), `✘ Wrong` (prediction opposed price move), `○ Pending` (target candle currently forming), or `–` (abstained / no-signal bar). No-signal bars never count as hits or misses.
+8. **SOURCE**: Dataset epoch pill (`OUT-OF-SAMPLE`, `LIVE`, `IN-SAMPLE`, `REPLAY`) with tooltip.
+9. **Expandable Audit Detail**: Clicking or tapping any row opens an accordion card exposing the exact calibrated posterior probability against thresholds (`P(Up) 62.5%. Up needs >= 56.3%, Down needs <= 43.4%`), market regime, data tape source, frozen model hash prefix (`75d0b0bf`), bar close time, delivery delay, and SHA-256 cryptographic audit record hash. Only one detail row is open at a time.
+
+### 6.2 Day Controls & Navigation
+- **Default Day**: Automatically loads the current session during trading hours, or the latest scored session (`2026-11-13`) when market is closed.
+- **Controls**:
+  - `◀ Prev`: Steps back one trading day.
+  - Date Picker (`<input type="date">`): Allows instant jumping to any trading day in the database.
+  - `Next ▶`: Steps forward one trading day.
+  - `Latest session`: Jumps to the latest scored session with out-of-sample data (`2026-11-13`).
+  - `?day=YYYY-MM-DD`: Full URL query parameter support.
+- **Horizon Tabs**: "1 hour" (default) | "3 hours" | "Rest of day". Only one horizon displayed at a time to prevent mixing.
+- **Day Summary Strip**: Displays complete session summary: e.g. `Fri 13 Nov 2026 | GS $921.96 → $916.16 (-0.63%) | Signals 2 (Up 1, Down 1) | Correct 1 | Wrong 1 | Pending 0 | No signal 5 | Accuracy 1/2 (Wilson 95% CI [9.45%, 90.55%])` with small note `demonstration, not proof (n=2)`.
+- **Hour Strip of Chips**: Interactive chips for each hour of the day (`10:30 ▲ UP 63% ✔`, `11:30 – NO SIGNAL –`, etc.). Clicking any chip highlights that candle on the chart and smoothly scrolls to the row in the table.
+- **De-duplication & Feeds**: Exactly ONE row per `(bar_start, horizon)`. Consolidated SIP tape is preferred by default. Older feature-shifted IEX rows are excluded from scoring and hidden by default, with an optional toggle `Show IEX rows (not scored)` for transparency.
+- **Single Source of Truth**: All numbers across the day summary, the table rows, the hour strip, the 1d/4d/20d balance cards, and the scoreboard derive from the same engine function (`src/live/log_engine.py`), guaranteeing zero discrepancies.
