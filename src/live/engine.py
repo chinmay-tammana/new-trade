@@ -83,11 +83,11 @@ class LiveEngine:
 
     def __init__(
         self,
-        feed: str = "iex",
+        feed: str = "sip_delayed",
         db: Optional[LiveDatabase] = None,
         allow_model_change: bool = False,
         min_history_bars: int = 600,
-        live_signals_enabled: bool = False
+        live_signals_enabled: bool = True
     ):
         self.feed = feed.lower()
         self.db = db or LiveDatabase()
@@ -273,7 +273,7 @@ class LiveEngine:
         # 6. Check STRONG tier
         with open("models/calib_live.json") as f:
             cfg_live = json.load(f)
-        strong_thresh = cfg_live.get("strong_confidence_threshold", 0.520414)
+        strong_thresh = float(cfg_live.get("strong_confidence_threshold", 0.520414))
         is_strong = int(insights["confidence"] >= strong_thresh)
 
         # Model / Config Hashes
@@ -286,6 +286,7 @@ class LiveEngine:
         config_sha = hashlib.sha256(cfg_json.encode("utf-8")).hexdigest()
 
         total_latency = time.time() - t_gen_start
+        delivered_dt = bar_end + pd.Timedelta(minutes=16)
 
         record = {
             "bar_start": bar_start.isoformat(),
@@ -306,7 +307,16 @@ class LiveEngine:
             "feed": self.feed,
             "generated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             "latency_s": round(total_latency + fetch_latency, 2),
-            "late": int(late)
+            "late": int(late),
+            "sample": "LIVE",
+            "delivered_at": delivered_dt.isoformat(),
+            "delivery_delay_s": 960.0,
+            "schema_v": 2,
+            "rule_version": 1,
+            "p_cal": insights.get("p_cal"),
+            "q_lo": float(insights.get("q_lo", 0.43428)),
+            "q_hi": float(insights.get("q_hi", 0.56323)),
+            "tier": "STRONG" if is_strong else None
         }
 
         stored = self.db.insert_signal(record)

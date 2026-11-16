@@ -1,0 +1,23 @@
+{
+  "model_version": "m5_v1",
+  "bar_minutes": 5,
+  "horizon": "5m",
+  "freeze_date": "2026-11-13",
+  "coverage_c": 0.1,
+  "q_lo": 0.37279410660266876,
+  "q_hi": 0.6291327178478241,
+  "strong_threshold": 0.7014911621809006,
+  "label_threshold_bps": 2,
+  "vol_terciles": [
+    -7.728199441627,
+    -6.6847117393914814
+  ],
+  "band_quantiles": [
+    -0.0018527527269087685,
+    0.0018222164635963713
+  ],
+  "ece": 0.006928182630998085,
+  "calibrator_intercept": -0.031159846112132072,
+  "calibrator_coef": 1.0833913087844849,
+  "created_at": "2026-11-15T13:55:05.914312-05:00"
+}

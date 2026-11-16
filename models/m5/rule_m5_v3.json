@@ -1,0 +1,13 @@
+{
+  "rule_version": 3,
+  "rule_type": "always_call",
+  "coverage_target": 1.0,
+  "threshold_up": 0.5,
+  "threshold_down": 0.5,
+  "q_lo": 0.5,
+  "q_hi": 0.5,
+  "weak_threshold": 0.5207651257514954,
+  "strong_threshold": 0.5811157375574112,
+  "source": "owner decision 2026-11-16 (V4.2-ALWAYSCALL)",
+  "created_at": "2026-11-16T08:20:05.747391-05:00"
+}

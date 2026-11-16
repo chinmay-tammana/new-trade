@@ -33,5 +33,21 @@ python3 -c "from src.live.engine import verify_model_lock; verify_model_lock()"
 
 # Start server
 PORT="${PORT:-8000}"
+
+# Auto-free port if an old server instance is already running
+EXISTING_PID=$(lsof -ti tcp:${PORT} -sTCP:LISTEN 2>/dev/null || true)
+if [ -n "${EXISTING_PID}" ]; then
+    echo "Port ${PORT} is currently in use by PID(s): ${EXISTING_PID}"
+    echo "Stopping existing process on port ${PORT} to restart..."
+    kill -15 ${EXISTING_PID} 2>/dev/null || true
+    sleep 1
+    # Force kill if still lingering
+    RECHECK_PID=$(lsof -ti tcp:${PORT} -sTCP:LISTEN 2>/dev/null || true)
+    if [ -n "${RECHECK_PID}" ]; then
+        kill -9 ${RECHECK_PID} 2>/dev/null || true
+        sleep 1
+    fi
+fi
+
 echo "Launching Live Indicator Server on http://localhost:${PORT}"
 exec python3 -m src.live.server --port "${PORT}" "$@"

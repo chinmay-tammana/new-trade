@@ -51,7 +51,10 @@ def infer_latest_insights(
             "band_high": None,
             "regime": "Chop",
             "historical_hit_rate_for_this_hour_and_side": None,
-            "n_hour_side": 0
+            "n_hour_side": 0,
+            "p_cal": 0.50,
+            "q_lo": 0.43428,
+            "q_hi": 0.56323
         }
 
     latest_row = df_features.iloc[-1]

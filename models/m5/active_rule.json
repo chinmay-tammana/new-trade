@@ -1,0 +1,6 @@
+{
+  "active_rule_version": 3,
+  "active_rule_file": "rule_m5_v3.json",
+  "description": "Always-Call directional signals on every eligible interval (Owner Decision 2026-11-16)",
+  "updated_at": "2026-11-16T08:23:46.927207-05:00"
+}

@@ -1,0 +1,14 @@
+{
+  "rule_version": 2,
+  "rule_type": "rule_b",
+  "coverage_target": 0.3,
+  "achieved_coverage_oof": 0.47995775285419706,
+  "achieved_coverage_last_20": 0.1256578947368421,
+  "q_lo": 0.4516846939921379,
+  "q_hi": 0.5452765136957168,
+  "min_margin": 0.01,
+  "weak_threshold": 0.5619767308235168,
+  "strong_threshold": 0.6193440854549408,
+  "source": "owner decision 2026-11-16 (V4.1-COVERAGE)",
+  "created_at": "2026-11-15T14:26:02.534034-05:00"
+}

@@ -99,10 +99,10 @@ def get_bar_insights(
 
     X = row[FEATURES].to_numpy().reshape(1, -1)
 
-    # 1. Calibrated Directional Posterior
+    # 1. Calibrated Directional Posterior from frozen calib_meta (q_lo ~ 0.434, q_hi ~ 0.563)
     p_cal = float(ensemble.predict_proba(X)[0])
-    q_lo = calib_meta["q_lo"]
-    q_hi = calib_meta["q_hi"]
+    q_lo = float(calib_meta["q_lo"])
+    q_hi = float(calib_meta["q_hi"])
 
     if p_cal >= q_hi:
         direction = "Up"
@@ -152,5 +152,8 @@ def get_bar_insights(
         "band_low": float(band_low),
         "band_high": float(band_high),
         "regime": regime,
-        "historical_hit_rate_for_this_hour_and_side": float(hist_hit_rate)
+        "historical_hit_rate_for_this_hour_and_side": float(hist_hit_rate),
+        "p_cal": float(p_cal),
+        "q_lo": float(q_lo),
+        "q_hi": float(q_hi)
     }
