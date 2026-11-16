@@ -1,0 +1,7 @@
+configuration,swapped_group,features_swapped,up_signals,down_signals,no_signals,restores_two_sided
+Baseline Pure IEX,None (Pure IEX),0,0,7,17,False
+Baseline Pure SIP,All (Pure SIP),51,2,4,18,True
+IEX + SIP volume,volume,2,2,5,17,True
+IEX + SIP intrabar,intrabar,4,0,6,18,False
+IEX + SIP peers_vixy,peers_vixy,3,0,7,17,False
+IEX + SIP momentum_trend,momentum_trend,7,0,7,17,False

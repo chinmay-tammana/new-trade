@@ -1,0 +1,37 @@
+{
+  "evaluation_window": "2025-10-16 to 2026-11-09",
+  "total_candles": 1872,
+  "labelled_candles": 1604,
+  "signals_emitted": 1422,
+  "up_signals": 848,
+  "down_signals": 574,
+  "no_signals": 182,
+  "coverage_pct": 88.65,
+  "up_hits": 438,
+  "down_hits": 305,
+  "total_hits": 743,
+  "up_accuracy_pct": 51.65,
+  "up_wilson_ci": [
+    48.29,
+    55.0
+  ],
+  "down_accuracy_pct": 53.14,
+  "down_wilson_ci": [
+    49.05,
+    57.18
+  ],
+  "overall_accuracy_pct": 52.25,
+  "overall_wilson_ci": [
+    49.65,
+    54.84
+  ],
+  "base_up_rate_pct": 50.06,
+  "base_down_rate_pct": 49.94,
+  "up_edge_pts": 1.59,
+  "down_edge_pts": 3.2,
+  "permutation_p": 0.0417,
+  "criterion_b_verdict": "NOT MET (52.25% < 53.0% threshold)",
+  "strong_confidence_threshold": 0.520414,
+  "strong_accuracy_pct": 51.56,
+  "notice_text": "Research Holdout: 52.25% accuracy across 1,422 evaluated signals (95% Wilson CI: [49.65%, 54.84%], p = 0.0417). An individual hourly signal is weak evidence on its own. Never risk capital on a single candle."
+}

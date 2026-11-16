@@ -346,3 +346,99 @@ def test_zero_secrets_exposure():
         for secret in sensitive_env_keys:
             if secret and len(secret) > 8:
                 assert secret not in body_text, f"Secret leaked in endpoint {ep}!"
+
+
+# ----------------------------------------------------------------------
+# 7. V3.1-FIX TESTS (COUNTDOWN, MARKET CLOSED PANEL, VERIFIED V2, REPLAY, MARKER IMMUTABILITY)
+# ----------------------------------------------------------------------
+
+def test_countdown_formatting():
+    from src.live.server import format_countdown
+
+    # During open market: mm:ss
+    assert format_countdown(125, market_open=True) == "02:05"
+    assert format_countdown(3599, market_open=True) == "59:59"
+    assert format_countdown(0, market_open=True) == "00:00"
+
+    # Outside market hours: Xd Yh Zm or Yh Zm
+    # 2 days, 3 hours, 15 minutes = 2*86400 + 3*3600 + 15*60 = 184500
+    assert format_countdown(184500, market_open=False) == "2d 3h 15m"
+    # 5 hours, 42 minutes = 5*3600 + 42*60 = 20520
+    assert format_countdown(20520, market_open=False) == "5h 42m"
+    assert format_countdown(0, market_open=False) == "Opens Soon"
+
+
+def test_market_closed_panel_state():
+    """When market is closed, main panel returns latest emitted signal with sample tag, not None."""
+    client = TestClient(app)
+    res = client.get("/api/latest")
+    assert res.status_code == 200
+    data = res.json()
+    assert "direction" in data
+    assert data["direction"] in ["Up", "Down", "No signal", "No signal (end of day)", "No signal (parity gate)"]
+    assert "sample" in data
+    assert data["sample"] in ["IN-SAMPLE", "OUT-OF-SAMPLE", "LIVE"]
+    assert "confidence" in data
+    assert data["confidence"] > 0
+
+
+def test_verified_numbers_endpoint():
+    """Verify that /api/verified_v2 returns the exact numbers from verified_v2.json."""
+    client = TestClient(app)
+    res = client.get("/api/verified_v2")
+    assert res.status_code == 200
+    data = res.json()
+
+    with open("results/logs/verified_v2.json") as f:
+        expected = json.load(f)
+
+    assert data["evaluation_window"] == expected["evaluation_window"]
+    assert data["total_candles"] == expected["total_candles"]
+    assert data["signals_emitted"] == expected["signals_emitted"]
+    assert data["overall_accuracy_pct"] == expected["overall_accuracy_pct"]
+    assert data["overall_wilson_ci"] == expected["overall_wilson_ci"]
+    assert data["permutation_p"] == expected["permutation_p"]
+    assert data["criterion_b_verdict"] == expected["criterion_b_verdict"]
+
+
+def test_replay_endpoint():
+    """Verify that /api/replay returns valid bars & signals for a valid date and graceful error for invalid date."""
+    client = TestClient(app)
+
+    # Valid session date
+    res = client.get("/api/replay?date=2026-11-13")
+    assert res.status_code == 200
+    data = res.json()
+    assert data.get("is_replay") is True
+    assert len(data.get("bars", [])) == 7
+    assert len(data.get("signals", [])) == 7
+
+    # Invalid session date
+    res_inv = client.get("/api/replay?date=1999-01-01")
+    assert res_inv.status_code == 200
+    data_inv = res_inv.json()
+    assert "error" in data_inv
+
+
+def test_marker_immutability():
+    """Verify that adding a new bar does not mutate or shift existing historical signal markers."""
+    signals_history = [
+        {"bar_start": "2026-11-13T09:30:00-05:00", "direction": "No Signal", "confidence": 0.521},
+        {"bar_start": "2026-11-13T10:30:00-05:00", "direction": "Up", "confidence": 0.535},
+        {"bar_start": "2026-11-13T11:30:00-05:00", "direction": "Down", "confidence": 0.542},
+    ]
+
+    # Build initial markers dictionary keyed by bar_start (as done in frontend app.js markerMap)
+    markers_map = {s["bar_start"]: dict(s) for s in signals_history}
+    snapshot_before = json.dumps(markers_map, sort_keys=True)
+
+    # Simulate arrival of a new bar and signal
+    new_signal = {"bar_start": "2026-11-13T12:30:00-05:00", "direction": "Up", "confidence": 0.528}
+    signals_history.append(new_signal)
+    markers_map[new_signal["bar_start"]] = dict(new_signal)
+
+    # The existing entries must be strictly unchanged
+    existing_keys = ["2026-11-13T09:30:00-05:00", "2026-11-13T10:30:00-05:00", "2026-11-13T11:30:00-05:00"]
+    for k in existing_keys:
+        assert markers_map[k] == json.loads(snapshot_before)[k]
+

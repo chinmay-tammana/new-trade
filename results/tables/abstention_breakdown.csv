@@ -1,0 +1,6 @@
+reason,count,candidate_candle_flag,description
+inside the no-signal band,16,1,"Calibrated posterior probability p_cal fell inside abstention interval [q_lo=0.434, q_hi=0.563]"
+end of day,4,0,Final session bar (15:30 ET) with no forward target hour in same trading day
+data gap per symbol,0,1,Insufficient minutes or data gap during market session
+market closed,0,0,Off-market hours or weekend
+other,0,1,Any other model abstention condition

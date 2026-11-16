@@ -1,0 +1,5 @@
+group_replaced,features_in_group,mean_abs_pcal_shift,up_signals_produced,down_signals_produced,no_signals_produced,restores_two_sided_signals
+volume,0,0.0,0,7,17,False
+intrabar,0,0.0,0,7,17,False
+peers_vixy,0,0.0,0,7,17,False
+momentum_trend,13,4.958849592777426e-06,0,7,17,False

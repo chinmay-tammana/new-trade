@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-11-15T13:32:06.586787-05:00",
+  "feed": "sip_delayed",
+  "gate_a": {
+    "passed": true,
+    "message": "Max feature diff 1.09e-11 <= 1e-6"
+  },
+  "gate_b": {
+    "passed": true,
+    "message": "All 8 symbols retrieved successfully via delayed SIP"
+  },
+  "gate_c": {
+    "passed": true,
+    "message": "100% direction match, max conf diff 0.00e+00 <= 1e-9"
+  },
+  "live_signals_enabled": true
+}

@@ -1,0 +1,8 @@
+{
+  "criterion_a_oof_loss": true,
+  "criterion_b_holdout_acc": false,
+  "criterion_c_base_rate": true,
+  "criterion_d_ece": true,
+  "criterion_e_integrity": true,
+  "criterion_f_economic_reported": true
+}

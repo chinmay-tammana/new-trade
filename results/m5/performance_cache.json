@@ -1,0 +1,565 @@
+{
+  "generated_at": "2026-11-16T09:12:24.301642-05:00",
+  "holdout": {
+    "n_total_bars": 9598,
+    "n_labelled": 9472,
+    "n_up": 4679,
+    "n_down": 4793,
+    "n_nosig_eod": 126,
+    "n_nosig_tie": 0,
+    "n_nosig_total": 126,
+    "n_correct": 5108,
+    "accuracy_all": 53.93,
+    "ci_all": [
+      52.92,
+      54.93
+    ],
+    "accuracy_up": 53.3,
+    "ci_up": [
+      51.87,
+      54.73
+    ],
+    "accuracy_down": 54.54,
+    "ci_down": [
+      53.13,
+      55.94
+    ],
+    "base_rate_up": 49.33,
+    "base_rate_down": 50.67,
+    "majority_base_rate": 50.67,
+    "edge": 3.26,
+    "tiers": {
+      "weak": {
+        "n": 2962,
+        "correct": 1463,
+        "accuracy": 49.39,
+        "ci": [
+          47.59,
+          51.19
+        ],
+        "up_calls": 1504,
+        "down_calls": 1458
+      },
+      "normal": {
+        "n": 5485,
+        "correct": 3002,
+        "accuracy": 54.73,
+        "ci": [
+          53.41,
+          56.04
+        ],
+        "up_calls": 2647,
+        "down_calls": 2838
+      },
+      "strong": {
+        "n": 1025,
+        "correct": 643,
+        "accuracy": 62.73,
+        "ci": [
+          59.73,
+          65.64
+        ],
+        "up_calls": 528,
+        "down_calls": 497
+      }
+    },
+    "is_monotonic": true,
+    "ece": 0.0079,
+    "brier": 0.2464
+  },
+  "oof": {
+    "n_total_bars": 39766,
+    "n_labelled": 39766,
+    "n_up": 19695,
+    "n_down": 20071,
+    "n_nosig_eod": 0,
+    "n_nosig_tie": 0,
+    "n_nosig_total": 0,
+    "n_correct": 22109,
+    "accuracy_all": 55.6,
+    "ci_all": [
+      55.11,
+      56.09
+    ],
+    "accuracy_up": 56.1,
+    "ci_up": [
+      55.4,
+      56.79
+    ],
+    "accuracy_down": 55.11,
+    "ci_down": [
+      54.42,
+      56.0
+    ],
+    "base_rate_up": 50.44,
+    "base_rate_down": 49.56,
+    "majority_base_rate": 50.44,
+    "edge": 5.16,
+    "tiers": {
+      "weak": {
+        "n": 9942,
+        "correct": 5082,
+        "accuracy": 51.12,
+        "ci": [
+          50.13,
+          52.1
+        ]
+      },
+      "normal": {
+        "n": 19882,
+        "correct": 10706,
+        "accuracy": 53.85,
+        "ci": [
+          53.15,
+          54.54
+        ]
+      },
+      "strong": {
+        "n": 9942,
+        "correct": 6321,
+        "accuracy": 63.58,
+        "ci": [
+          62.63,
+          64.52
+        ]
+      }
+    },
+    "is_monotonic": true,
+    "ece": 0.0069,
+    "brier": 0.2458
+  },
+  "live_post_holdout": {
+    "status": "0 completed sessions (first live post-holdout session in progress)",
+    "n_total": 0,
+    "n_labelled": 0,
+    "accuracy_all": null
+  },
+  "last_20_sessions": [
+    {
+      "date": "2026-10-19",
+      "weekday": "Monday",
+      "n_bars": 78,
+      "n_labelled": 77,
+      "n_correct": 44,
+      "accuracy": 57.14,
+      "ci": [
+        46.01,
+        67.6
+      ],
+      "n_up": 32,
+      "n_down": 45,
+      "n_nosig": 1,
+      "base_rate_up": 45.45,
+      "gs_return_pct": -1.18,
+      "cumulative_n": 77,
+      "cumulative_hits": 44,
+      "cumulative_acc": 57.14
+    },
+    {
+      "date": "2026-10-20",
+      "weekday": "Tuesday",
+      "n_bars": 77,
+      "n_labelled": 76,
+      "n_correct": 51,
+      "accuracy": 67.11,
+      "ci": [
+        55.94,
+        76.62
+      ],
+      "n_up": 36,
+      "n_down": 40,
+      "n_nosig": 1,
+      "base_rate_up": 56.58,
+      "gs_return_pct": 1.66,
+      "cumulative_n": 153,
+      "cumulative_hits": 95,
+      "cumulative_acc": 62.09
+    },
+    {
+      "date": "2026-10-21",
+      "weekday": "Wednesday",
+      "n_bars": 78,
+      "n_labelled": 77,
+      "n_correct": 39,
+      "accuracy": 50.65,
+      "ci": [
+        39.72,
+        61.52
+      ],
+      "n_up": 40,
+      "n_down": 37,
+      "n_nosig": 1,
+      "base_rate_up": 59.74,
+      "gs_return_pct": 0.51,
+      "cumulative_n": 230,
+      "cumulative_hits": 134,
+      "cumulative_acc": 58.26
+    },
+    {
+      "date": "2026-10-22",
+      "weekday": "Thursday",
+      "n_bars": 78,
+      "n_labelled": 77,
+      "n_correct": 42,
+      "accuracy": 54.55,
+      "ci": [
+        43.47,
+        65.19
+      ],
+      "n_up": 45,
+      "n_down": 32,
+      "n_nosig": 1,
+      "base_rate_up": 46.75,
+      "gs_return_pct": 0.78,
+      "cumulative_n": 307,
+      "cumulative_hits": 176,
+      "cumulative_acc": 57.33
+    },
+    {
+      "date": "2026-10-23",
+      "weekday": "Friday",
+      "n_bars": 76,
+      "n_labelled": 75,
+      "n_correct": 43,
+      "accuracy": 57.33,
+      "ci": [
+        46.05,
+        67.9
+      ],
+      "n_up": 35,
+      "n_down": 40,
+      "n_nosig": 1,
+      "base_rate_up": 44.0,
+      "gs_return_pct": -0.3,
+      "cumulative_n": 382,
+      "cumulative_hits": 219,
+      "cumulative_acc": 57.33
+    },
+    {
+      "date": "2026-10-26",
+      "weekday": "Monday",
+      "n_bars": 75,
+      "n_labelled": 74,
+      "n_correct": 46,
+      "accuracy": 62.16,
+      "ci": [
+        50.77,
+        72.35
+      ],
+      "n_up": 35,
+      "n_down": 39,
+      "n_nosig": 1,
+      "base_rate_up": 47.3,
+      "gs_return_pct": 0.85,
+      "cumulative_n": 456,
+      "cumulative_hits": 265,
+      "cumulative_acc": 58.11
+    },
+    {
+      "date": "2026-10-27",
+      "weekday": "Tuesday",
+      "n_bars": 78,
+      "n_labelled": 77,
+      "n_correct": 34,
+      "accuracy": 44.16,
+      "ci": [
+        33.61,
+        55.26
+      ],
+      "n_up": 34,
+      "n_down": 43,
+      "n_nosig": 1,
+      "base_rate_up": 53.25,
+      "gs_return_pct": -0.0,
+      "cumulative_n": 533,
+      "cumulative_hits": 299,
+      "cumulative_acc": 56.1
+    },
+    {
+      "date": "2026-10-28",
+      "weekday": "Wednesday",
+      "n_bars": 78,
+      "n_labelled": 77,
+      "n_correct": 46,
+      "accuracy": 59.74,
+      "ci": [
+        48.58,
+        69.98
+      ],
+      "n_up": 33,
+      "n_down": 44,
+      "n_nosig": 1,
+      "base_rate_up": 51.95,
+      "gs_return_pct": 0.75,
+      "cumulative_n": 610,
+      "cumulative_hits": 345,
+      "cumulative_acc": 56.56
+    },
+    {
+      "date": "2026-10-29",
+      "weekday": "Thursday",
+      "n_bars": 75,
+      "n_labelled": 74,
+      "n_correct": 39,
+      "accuracy": 52.7,
+      "ci": [
+        41.48,
+        63.66
+      ],
+      "n_up": 30,
+      "n_down": 44,
+      "n_nosig": 1,
+      "base_rate_up": 44.59,
+      "gs_return_pct": -1.04,
+      "cumulative_n": 684,
+      "cumulative_hits": 384,
+      "cumulative_acc": 56.14
+    },
+    {
+      "date": "2026-10-30",
+      "weekday": "Friday",
+      "n_bars": 78,
+      "n_labelled": 77,
+      "n_correct": 39,
+      "accuracy": 50.65,
+      "ci": [
+        39.72,
+        61.52
+      ],
+      "n_up": 39,
+      "n_down": 38,
+      "n_nosig": 1,
+      "base_rate_up": 40.26,
+      "gs_return_pct": -1.17,
+      "cumulative_n": 761,
+      "cumulative_hits": 423,
+      "cumulative_acc": 55.58
+    },
+    {
+      "date": "2026-11-02",
+      "weekday": "Monday",
+      "n_bars": 77,
+      "n_labelled": 76,
+      "n_correct": 39,
+      "accuracy": 51.32,
+      "ci": [
+        40.29,
+        62.22
+      ],
+      "n_up": 40,
+      "n_down": 36,
+      "n_nosig": 1,
+      "base_rate_up": 43.42,
+      "gs_return_pct": -0.92,
+      "cumulative_n": 837,
+      "cumulative_hits": 462,
+      "cumulative_acc": 55.2
+    },
+    {
+      "date": "2026-11-03",
+      "weekday": "Tuesday",
+      "n_bars": 77,
+      "n_labelled": 76,
+      "n_correct": 45,
+      "accuracy": 59.21,
+      "ci": [
+        47.98,
+        69.56
+      ],
+      "n_up": 39,
+      "n_down": 37,
+      "n_nosig": 1,
+      "base_rate_up": 50.0,
+      "gs_return_pct": -0.61,
+      "cumulative_n": 913,
+      "cumulative_hits": 507,
+      "cumulative_acc": 55.53
+    },
+    {
+      "date": "2026-11-04",
+      "weekday": "Wednesday",
+      "n_bars": 78,
+      "n_labelled": 77,
+      "n_correct": 42,
+      "accuracy": 54.55,
+      "ci": [
+        43.47,
+        65.19
+      ],
+      "n_up": 39,
+      "n_down": 38,
+      "n_nosig": 1,
+      "base_rate_up": 57.14,
+      "gs_return_pct": 1.13,
+      "cumulative_n": 990,
+      "cumulative_hits": 549,
+      "cumulative_acc": 55.45
+    },
+    {
+      "date": "2026-11-05",
+      "weekday": "Thursday",
+      "n_bars": 78,
+      "n_labelled": 77,
+      "n_correct": 41,
+      "accuracy": 53.25,
+      "ci": [
+        42.22,
+        63.97
+      ],
+      "n_up": 29,
+      "n_down": 48,
+      "n_nosig": 1,
+      "base_rate_up": 45.45,
+      "gs_return_pct": -6.86,
+      "cumulative_n": 1067,
+      "cumulative_hits": 590,
+      "cumulative_acc": 55.3
+    },
+    {
+      "date": "2026-11-06",
+      "weekday": "Friday",
+      "n_bars": 76,
+      "n_labelled": 75,
+      "n_correct": 42,
+      "accuracy": 56.0,
+      "ci": [
+        44.75,
+        66.67
+      ],
+      "n_up": 37,
+      "n_down": 38,
+      "n_nosig": 1,
+      "base_rate_up": 45.33,
+      "gs_return_pct": -0.75,
+      "cumulative_n": 1142,
+      "cumulative_hits": 632,
+      "cumulative_acc": 55.34
+    },
+    {
+      "date": "2026-11-09",
+      "weekday": "Monday",
+      "n_bars": 78,
+      "n_labelled": 77,
+      "n_correct": 36,
+      "accuracy": 46.75,
+      "ci": [
+        36.03,
+        57.78
+      ],
+      "n_up": 36,
+      "n_down": 41,
+      "n_nosig": 1,
+      "base_rate_up": 55.84,
+      "gs_return_pct": 2.39,
+      "cumulative_n": 1219,
+      "cumulative_hits": 668,
+      "cumulative_acc": 54.8
+    },
+    {
+      "date": "2026-11-10",
+      "weekday": "Tuesday",
+      "n_bars": 77,
+      "n_labelled": 76,
+      "n_correct": 36,
+      "accuracy": 47.37,
+      "ci": [
+        36.54,
+        58.45
+      ],
+      "n_up": 38,
+      "n_down": 38,
+      "n_nosig": 1,
+      "base_rate_up": 52.63,
+      "gs_return_pct": 0.26,
+      "cumulative_n": 1295,
+      "cumulative_hits": 704,
+      "cumulative_acc": 54.36
+    },
+    {
+      "date": "2026-11-11",
+      "weekday": "Wednesday",
+      "n_bars": 78,
+      "n_labelled": 77,
+      "n_correct": 42,
+      "accuracy": 54.55,
+      "ci": [
+        43.47,
+        65.19
+      ],
+      "n_up": 35,
+      "n_down": 42,
+      "n_nosig": 1,
+      "base_rate_up": 51.95,
+      "gs_return_pct": -0.09,
+      "cumulative_n": 1372,
+      "cumulative_hits": 746,
+      "cumulative_acc": 54.37
+    },
+    {
+      "date": "2026-11-12",
+      "weekday": "Thursday",
+      "n_bars": 76,
+      "n_labelled": 75,
+      "n_correct": 43,
+      "accuracy": 57.33,
+      "ci": [
+        46.05,
+        67.9
+      ],
+      "n_up": 39,
+      "n_down": 36,
+      "n_nosig": 1,
+      "base_rate_up": 52.0,
+      "gs_return_pct": -0.64,
+      "cumulative_n": 1447,
+      "cumulative_hits": 789,
+      "cumulative_acc": 54.53
+    },
+    {
+      "date": "2026-11-13",
+      "weekday": "Friday",
+      "n_bars": 74,
+      "n_labelled": 73,
+      "n_correct": 43,
+      "accuracy": 58.9,
+      "ci": [
+        47.45,
+        69.47
+      ],
+      "n_up": 31,
+      "n_down": 42,
+      "n_nosig": 1,
+      "base_rate_up": 47.95,
+      "gs_return_pct": -0.63,
+      "cumulative_n": 1520,
+      "cumulative_hits": 832,
+      "cumulative_acc": 54.74
+    }
+  ],
+  "signal_balance": {
+    "last_session": {
+      "date": "2026-11-13",
+      "up": 31,
+      "down": 42,
+      "no_signal": 1,
+      "total": 74
+    },
+    "last_5_sessions": {
+      "up": 179,
+      "down": 199,
+      "no_signal": 5,
+      "total": 383
+    },
+    "last_20_sessions": {
+      "up": 722,
+      "down": 798,
+      "no_signal": 20,
+      "total": 1540
+    }
+  },
+  "flat_bar_convention": {
+    "description": "A bar with close(t+1) == close(t) is labelled y = 0, i.e. counted as not up.",
+    "nov13_standard": "43/73 = 58.90%",
+    "nov13_miss": "42/73 = 57.53%"
+  }
+}

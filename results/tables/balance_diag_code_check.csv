@@ -1,0 +1,4 @@
+check,measured_value,threshold,passed
+live_engine_feature_parity_max_diff,5.234812583410076e-12,1e-06,True
+calibrators_monotonic_increasing,1.0,1.0,True
+class_balance_scale_pos_weight,1.0,0.9438881541658795,True

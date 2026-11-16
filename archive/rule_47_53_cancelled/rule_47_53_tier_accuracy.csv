@@ -1,0 +1,25 @@
+dataset,sample_tag,tier,side,n,hits,accuracy_pct,wilson_ci_95,wilson_low,wilson_high
+Pre-Holdout Base Reference (IN-SAMPLE),IN-SAMPLE (optimistic),WEAK,Up,1839,1068,58.08,"[55.81%, 60.31%]",55.81,60.31
+Pre-Holdout Base Reference (IN-SAMPLE),IN-SAMPLE (optimistic),WEAK,Down,1367,779,56.99,"[54.35%, 59.59%]",54.35,59.59
+Pre-Holdout Base Reference (IN-SAMPLE),IN-SAMPLE (optimistic),WEAK,Total,3206,1847,57.61,"[55.89%, 59.31%]",55.89,59.31
+Pre-Holdout Base Reference (IN-SAMPLE),IN-SAMPLE (optimistic),NORMAL,Up,1043,660,63.28,"[60.31%, 66.15%]",60.31,66.15
+Pre-Holdout Base Reference (IN-SAMPLE),IN-SAMPLE (optimistic),NORMAL,Down,895,545,60.89,"[57.66%, 64.04%]",57.66,64.04
+Pre-Holdout Base Reference (IN-SAMPLE),IN-SAMPLE (optimistic),NORMAL,Total,1938,1205,62.18,"[60.0%, 64.31%]",60.0,64.31
+Pre-Holdout Base Reference (IN-SAMPLE),IN-SAMPLE (optimistic),STRONG,Up,518,401,77.41,"[73.62%, 80.8%]",73.62,80.8
+Pre-Holdout Base Reference (IN-SAMPLE),IN-SAMPLE (optimistic),STRONG,Down,683,462,67.64,"[64.04%, 71.04%]",64.04,71.04
+Pre-Holdout Base Reference (IN-SAMPLE),IN-SAMPLE (optimistic),STRONG,Total,1201,863,71.86,"[69.25%, 74.33%]",69.25,74.33
+Pre-Holdout Base Reference (IN-SAMPLE),IN-SAMPLE (optimistic),ALL_DIRECTIONAL,Up,3400,2129,62.62,"[60.98%, 64.23%]",60.98,64.23
+Pre-Holdout Base Reference (IN-SAMPLE),IN-SAMPLE (optimistic),ALL_DIRECTIONAL,Down,2945,1786,60.65,"[58.87%, 62.39%]",58.87,62.39
+Pre-Holdout Base Reference (IN-SAMPLE),IN-SAMPLE (optimistic),ALL_DIRECTIONAL,Total,6345,3915,61.7,"[60.5%, 62.89%]",60.5,62.89
+Nov 10-13 Out-of-Sample (24 Bars),OUT-OF-SAMPLE,WEAK,Up,4,2,50.0,"[15.0%, 85.0%]",15.0,85.0
+Nov 10-13 Out-of-Sample (24 Bars),OUT-OF-SAMPLE,WEAK,Down,3,3,100.0,"[43.85%, 100.0%]",43.85,100.0
+Nov 10-13 Out-of-Sample (24 Bars),OUT-OF-SAMPLE,WEAK,Total,7,5,71.43,"[35.89%, 91.78%]",35.89,91.78
+Nov 10-13 Out-of-Sample (24 Bars),OUT-OF-SAMPLE,NORMAL,Up,1,1,100.0,"[20.65%, 100.0%]",20.65,100.0
+Nov 10-13 Out-of-Sample (24 Bars),OUT-OF-SAMPLE,NORMAL,Down,1,1,100.0,"[20.65%, 100.0%]",20.65,100.0
+Nov 10-13 Out-of-Sample (24 Bars),OUT-OF-SAMPLE,NORMAL,Total,2,2,100.0,"[34.24%, 100.0%]",34.24,100.0
+Nov 10-13 Out-of-Sample (24 Bars),OUT-OF-SAMPLE,STRONG,Up,1,1,100.0,"[20.65%, 100.0%]",20.65,100.0
+Nov 10-13 Out-of-Sample (24 Bars),OUT-OF-SAMPLE,STRONG,Down,3,1,33.33,"[6.15%, 79.23%]",6.15,79.23
+Nov 10-13 Out-of-Sample (24 Bars),OUT-OF-SAMPLE,STRONG,Total,4,2,50.0,"[15.0%, 85.0%]",15.0,85.0
+Nov 10-13 Out-of-Sample (24 Bars),OUT-OF-SAMPLE,ALL_DIRECTIONAL,Up,6,4,66.67,"[30.0%, 90.32%]",30.0,90.32
+Nov 10-13 Out-of-Sample (24 Bars),OUT-OF-SAMPLE,ALL_DIRECTIONAL,Down,7,5,71.43,"[35.89%, 91.78%]",35.89,91.78
+Nov 10-13 Out-of-Sample (24 Bars),OUT-OF-SAMPLE,ALL_DIRECTIONAL,Total,13,9,69.23,"[42.37%, 87.32%]",42.37,87.32

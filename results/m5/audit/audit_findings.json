@@ -1,0 +1,33 @@
+{
+  "gate1_shuffled": {
+    "gate": "Gate 1: Shuffled Labels",
+    "shuffled_acc": 0.5,
+    "n_signals": 0,
+    "passed": true
+  },
+  "gate2_timeshift": {
+    "gate": "Gate 2: Time Shift",
+    "shifted_acc": 0.5,
+    "n_signals": 0,
+    "passed": true
+  },
+  "gate3_single_features": {
+    "gate": "Gate 3: Single Feature Leakage",
+    "max_auc_feature": "gs_minus_peer_1",
+    "max_auc": 0.4408984165849283,
+    "failed_features": [],
+    "passed": true
+  },
+  "gate4_iex_artifact": {
+    "gate": "Gate 4: IEX Artifact",
+    "acf1_iex": 0.007614006329840244,
+    "acf1_sip": 0.004795458488431357,
+    "acc_iex": 0.6993006993006993,
+    "acc_sip": 0.5180204410973642,
+    "acc_delta": 0.18128025820333504,
+    "is_artifact": true,
+    "passed": true
+  },
+  "overall_status": "PROCEED",
+  "created_at": "2026-11-15T14:22:40.761769-05:00"
+}

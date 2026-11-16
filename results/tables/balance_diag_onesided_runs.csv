@@ -1,0 +1,4 @@
+dataset,total_directional_signals,rolling_8_signal_windows,one_sided_runs_count,one_sided_frequency_pct,rule_3_threshold_met
+Theoretical Binomial (p=0.50),8,1,1,0.78125,False
+Research Holdout (Oct 2025 - Nov 2026),1674,1667,64,3.8392321535692857,False
+Last 60 Sessions (SIP Feed),105,98,0,0.0,False

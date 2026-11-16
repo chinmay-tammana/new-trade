@@ -1,0 +1,5 @@
+period,calibrator_status,total_candidate_bars,old_rule_up,old_rule_down,old_rule_no_signal,old_rule_coverage_pct,new_rule_up,new_rule_down,new_rule_no_signal,new_rule_coverage_pct
+Last 60 Completed Sessions (SIP Feed),Deployed model & calibrator,360,55,50,255,29.17,107,97,156,56.67
+"Nov 10-13 Out-of-Sample (24 Bars, SIP Feed)",Deployed model & calibrator,24,2,4,18,25.0,6,7,11,54.17
+V2 Research Holdout (Pre-Refit Model),"different calibrator, indicative only",1605,285,276,1044,34.95,585,425,595,62.93
+Pre-Holdout Walk-Forward / Base Ref,"different calibrator, indicative only",10289,1561,1514,7214,29.89,3400,2945,3944,61.67

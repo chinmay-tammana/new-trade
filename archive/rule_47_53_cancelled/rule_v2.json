@@ -1,0 +1,8 @@
+{
+  "rule_version": 2,
+  "q_lo": 0.47,
+  "q_hi": 0.53,
+  "weak_below_conf": 0.563232433386711,
+  "strong_conf": 0.60,
+  "source": "owner decision 2026-11-15"
+}
