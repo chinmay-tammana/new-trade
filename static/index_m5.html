@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GS AI Directional Indicator (5m)</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Vendored Lightweight Charts without external runtime requests -->
+  <script src="vendor/lightweight-charts.standalone.production.js"></script>
+</head>
+<body>
+  <!-- Header Bar -->
+  <header>
+    <div class="brand">
+      <span class="ticker-badge">GS</span>
+      <h1>AI Directional Indicator (5m)</h1>
+      <span class="badge badge-info" id="badge-feed-signals">SIGNALS: REAL-TIME IEX 5-MIN</span>
+      <span class="badge badge-secondary" id="badge-rule">RULE: ALWAYS-CALL V3</span>
+    </div>
+
+    <!-- Live Dual Clocks (ET and IST) -->
+    <div class="header-clocks">
+      <span id="clock-et" class="clock-display">ET: --:--:-- EST</span>
+      <span class="clock-sep">|</span>
+      <span id="clock-ist" class="clock-display">IST: --:--:-- IST</span>
+    </div>
+
+    <div class="badges-bar">
+      <span class="badge" id="badge-market">MARKET ...</span>
+      <span class="badge" id="badge-model">MODEL: hash verified</span>
+      <span class="badge badge-replay" id="badge-replay" style="display:none;">REPLAY MODE</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- Left Column: Chart and Full-Width Inline Signals Log Directly Below Chart -->
+    <section id="chart-panel">
+      <!-- Replay & Chart Controls Toolbar -->
+      <div class="replay-toolbar" id="replay-toolbar">
+        <div class="replay-controls">
+          <label for="replay-date-select"><strong>Historical Replay:</strong></label>
+          <select id="replay-date-select" class="control-select">
+            <option value="2026-11-16">2026-11-16 (Live Evaluation Session)</option>
+            <option value="2026-11-13">2026-11-13 (Last Completed Session)</option>
+            <option value="2026-11-12">2026-11-12 (Recent Out-of-Sample)</option>
+            <option value="2026-11-11">2026-11-11 (Recent Out-of-Sample)</option>
+            <option value="2026-11-10">2026-11-10 (Recent Out-of-Sample)</option>
+            <option value="2026-11-06">2026-11-06 (Replay Benchmark)</option>
+            <option value="2026-11-05">2026-11-05 (Election Volatility Session)</option>
+            <option value="2024-11-29">2024-11-29 (Black Friday Half-Day)</option>
+          </select>
+          <button id="btn-run-replay" class="btn btn-primary">Replay Day</button>
+          <label for="replay-speed" style="margin-left: 8px;">Speed:</label>
+          <select id="replay-speed" class="control-select">
+            <option value="instant">Instant</option>
+            <option value="1">1x (Slow)</option>
+            <option value="3">3x (Medium)</option>
+            <option value="10">10x (Fast)</option>
+          </select>
+          <button id="btn-reset-live" class="btn btn-secondary" style="display:none;">Back to Live</button>
+          <button id="btn-toggle-labels" class="btn btn-secondary" style="margin-left:8px;">Labels: OFF</button>
+        </div>
+        <div id="chart-legend" class="chart-legend-text"></div>
+      </div>
+
+      <div class="chart-header">
+        <div class="chart-title"><strong>Goldman Sachs (NYSE: GS)</strong> — Session-Anchored 5-Minute Candles (America/New_York)</div>
+        <div id="chart-status-label" class="chart-status-tag">● LIVE DATA (5M AGGREGATION)</div>
+      </div>
+
+      <!-- TV Chart Container -->
+      <div id="tv-chart"></div>
+
+      <!-- Signals Log Panel (Full-Width Panel Directly Below Chart) -->
+      <div class="signals-log-panel" id="signals-log-panel">
+        <!-- Day Controls Bar -->
+        <div class="log-panel-header">
+          <div class="day-controls-bar">
+            <button id="btn-prev-day" class="btn btn-secondary btn-sm" title="Previous trading day">◀ Prev</button>
+            <input type="date" id="day-picker" class="control-input" title="Jump to date" value="2026-11-16">
+            <button id="btn-next-day" class="btn btn-secondary btn-sm" title="Next trading day">Next ▶</button>
+            <button id="btn-latest-day" class="btn btn-secondary btn-sm">Latest session</button>
+          </div>
+
+          <!-- Minimal Filters -->
+          <div class="log-filters-bar">
+            <div class="filter-group">
+              <label for="sort-order-select">Order:</label>
+              <select id="sort-order-select" class="control-select">
+                <option value="chronological" selected>Chronological (09:30 first)</option>
+                <option value="newest">Newest first (15:55 first)</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label class="checkbox-label" for="filter-nosig-check" title="Toggle display of neutral/abstained rows">
+                <input type="checkbox" id="filter-nosig-check" checked> Show No-signal rows
+              </label>
+            </div>
+            <div class="filter-group">
+              <label class="checkbox-label" for="filter-strong-check" title="Filter to STRONG conviction tier only">
+                <input type="checkbox" id="filter-strong-check"> STRONG only
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compact Day Summary Strip Directly Under Chart -->
+        <div class="day-summary-strip" id="day-summary-strip">
+          <span class="summary-main" id="summary-main">Loading session summary...</span>
+          <span class="summary-sub" id="log-day-header" style="display:none;"></span>
+        </div>
+
+        <!-- Signal Strip of Chips Across the Day -->
+        <div class="hour-strip-container" id="hour-strip-container">
+          <div id="timeline-strip" style="display: flex; gap: 4px; overflow-x: auto; width: 100%;">
+            <!-- Dynamically populated 5m chips -->
+          </div>
+        </div>
+
+        <!-- Revision Notice for 2026-11-16 Data Feed Fix -->
+        <div id="feed-revision-notice" class="revision-notice" style="display: none; padding: 8px 12px; margin-bottom: 8px; font-size: 11px; line-height: 1.4; background-color: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 4px; color: #38bdf8;">
+          Signals before 12:15 ET and 12:30–13:40 ET on 2026-11-16 were generated or recorded with an engine fault (fixed). Corrected signals were re-derived afterwards.
+        </div>
+
+        <!-- Dedicated Scroll Region for Signals Table -->
+        <div class="signals-scroll-box" id="signals-scroll-box">
+          <table class="signal-table" id="signal-log-table">
+            <thead>
+              <tr>
+                <th style="width: 13%;">BAR PREDICTED (ET)</th>
+                <th style="width: 14%;">ISSUED (ET | IST)</th>
+                <th style="width: 16%;">CALL</th>
+                <th style="width: 12%;">STRENGTH</th>
+                <th style="width: 17%;">VOL AND BAND (bps)</th>
+                <th style="width: 16%;">PRICE MOVE</th>
+                <th style="width: 12%;">RESULT</th>
+              </tr>
+            </thead>
+            <tbody id="signal-log-tbody">
+              <tr><td colspan="7" class="state-message">Loading signals...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Toggle Bar for Model & Feed Diagnostics -->
+      <div class="diag-toggle-bar">
+        <button id="btn-toggle-diagnostics" class="btn btn-secondary">
+          <span id="diag-toggle-text">Show Model & Feed Diagnostics ▼</span>
+        </button>
+      </div>
+
+      <!-- Comprehensive Inline Diagnostics Panel (Collapsed by default) -->
+      <section class="diagnostics-panel" id="diagnostics-section" style="display:none;">
+        <div class="diag-header">
+          <div class="diag-title-wrap">
+            <h3>Model & Feed Diagnostics (M5 Always-Call v3)</h3>
+            <span class="badge badge-success" id="diag-verdict-badge">FEED: ACTIVE</span>
+          </div>
+          <div class="diag-subtitle">Deterministic inference and integrity parameters for 5-minute engine</div>
+        </div>
+
+        <!-- 4 Diagnostics Cards -->
+        <div class="diag-cards-grid">
+          <div class="diag-card">
+            <div class="diag-card-title">Production Model Hash</div>
+            <div class="diag-card-stat" style="color: #38bdf8;">bb018397 [MATCH]</div>
+            <div class="diag-card-desc">
+              • SHA256 verified against <code>models/m5/MODEL_SHA256_m5.json</code>.<br>
+              • Calibrator: <code>6f65c1d2...</code> (Isotonic Regression, 10 bins).<br>
+              • Deterministic fit (seed 42, 51 causal features).
+            </div>
+          </div>
+
+          <div class="diag-card">
+            <div class="diag-card-title">Active Rule Version</div>
+            <div class="diag-card-stat" style="color: #26a69a;">Rule v3 (Always-Call)</div>
+            <div class="diag-card-desc">
+              • q_lo = 0.5000, q_hi = 0.5000 (100% directional target).<br>
+              • Conviction: WEAK &le; 52.1%, NORMAL 52.1%-58.1%, STRONG &ge; 58.1%.<br>
+              • Strictly no artificial quotas; calibrated P(Up) tie at 50% only.
+            </div>
+          </div>
+
+          <div class="diag-card">
+            <div class="diag-card-title">Database & Hash Chain</div>
+            <div class="diag-card-stat" style="color: #fbbf24;">Chain Valid</div>
+            <div class="diag-card-desc">
+              • <code>data/live/live_m5.db</code>: 2,740+ rows verified.<br>
+              • SHA256 link: <code>row_hash = sha256(prev_hash | bar | ...)</code>.<br>
+              • Immutable SQLite triggers prevent UPDATE and DELETE.
+            </div>
+          </div>
+
+          <div class="diag-card">
+            <div class="diag-card-title">Feed Health & Data Gaps</div>
+            <div class="diag-card-stat" style="color: #a78bfa;">IEX 1-Min Aggregation</div>
+            <div class="diag-card-desc">
+              • Aggregation: causal 1m OHLCV to 5m session-anchored bars.<br>
+              • Missing minutes handled causally without lookahead.<br>
+              • EOD bar 15:55-16:00 is always No Signal (end of session).
+            </div>
+          </div>
+        </div>
+
+        <!-- Preserved Disclosures (Plain text inside Diagnostics) -->
+        <div class="diag-disclosures-box" style="margin-top: 14px; padding: 10px 14px; background: rgba(15, 23, 42, 0.6); border: 1px solid #334155; border-radius: 6px; font-size: 11px; color: #94a3b8; line-height: 1.5;">
+          <div style="margin-bottom: 4px;">• <strong>IEX Tape Disclosure:</strong> Accuracy measured against IEX prints (69.93%) fell to 51.80% against the Consolidated SIP tape; figures are IEX-based and may overstate real-world performance.</div>
+          <div style="margin-bottom: 4px;">• <strong>Holdout Disclosure:</strong> The research holdout was inspected during model selection. These are descriptive summaries, not a clean out-of-sample test.</div>
+          <div style="color: #f59e0b;">• <strong>Unrevised Baseline (2026-11-16):</strong> 10/21 correct (incomplete data feed with context NaNs before 12:15 ET engine fix).</div>
+        </div>
+      </section>
+    </section>
+
+    <!-- Right Column: Sidebar matching earlier 1-hour page -->
+    <aside id="side-panel">
+      <!-- Hero Direction Card (Readable in 1 Second) -->
+      <div class="hero-card" id="headline-card">
+        <div class="hero-top-row">
+          <span class="sample-tag" id="hero-sample-tag">LIVE</span>
+          <span class="outcome-pill" id="hero-outcome-pill" style="display:none;"></span>
+        </div>
+
+        <div class="direction-huge direction-none" id="hero-direction">
+          <span id="headline-call">STANDBY</span>
+        </div>
+
+        <div class="hero-strong-row" id="hero-strong-row" style="margin: 4px 0;">
+          <span class="strong-pill" id="headline-tier-chip">NORMAL TIER</span>
+        </div>
+
+        <div class="hero-meta" id="hero-meta">
+          <div class="hero-headline-delivery" id="headline-age" style="color: #38bdf8; font-weight: 500; font-size: 11px; line-height: 1.3;">Awaiting live bar close...</div>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Grid -->
+      <div class="metrics-grid">
+        <div class="metric-box">
+          <div class="metric-label">Market Regime</div>
+          <div class="metric-value" id="val-regime">Chop</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label" id="lbl-countdown">Next Bar Close</div>
+          <div class="metric-value" id="val-countdown" style="color:#f59e0b;">--:--</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Model Target</div>
+          <div class="metric-value" id="val-target">100% Coverage</div>
+        </div>
+      </div>
+
+      <!-- Signal Balance Card -->
+      <div class="balance-card" id="balance-card">
+        <div class="section-title-row">
+          <h3>Signal Balance</h3>
+          <span class="badge badge-info" id="badge-balance-mode">ALWAYS-CALL V3</span>
+        </div>
+
+        <div class="balance-grid">
+          <div class="balance-item">
+            <div class="bal-label" id="lbl-bal-1d">Selected Session</div>
+            <div class="bal-val" id="bal-1d">Up: 0 | Down: 0 | No-Sig: 0</div>
+          </div>
+          <div class="balance-item">
+            <div class="bal-label">Last 5 Sessions</div>
+            <div class="bal-val" id="bal-5d">Up: 148 | Down: 165 | No-Sig: 6</div>
+          </div>
+          <div class="balance-item">
+            <div class="bal-label">Last 20 Sessions</div>
+            <div class="bal-val" id="bal-20d">Up: 590 | Down: 615 | No-Sig: 25</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selected Day Performance Card -->
+      <div class="scoreboard-section" id="allbar-vs-strong-card">
+        <div class="section-title-row">
+          <h3 id="scoreboard-title">Selected Day Performance</h3>
+          <span class="badge badge-info" id="badge-day-mode">M5</span>
+        </div>
+        
+        <div class="score-main-metric">
+          <div class="score-headline">
+            Signal accuracy = <strong id="score-hit-rate">--%</strong>
+            <span id="score-wilson-ci" class="score-ci">[--%, --%]</span>
+          </div>
+          <div class="score-subtext" id="score-formula-text">Signal accuracy = hits / directional signals (<span id="score-directional-n">n=--</span>)</div>
+        </div>
+
+        <div class="score-breakdown-row">
+          <div>Down: <strong id="score-down-stat" style="color:#ef5350;">--/-- (--%)</strong></div>
+          <div>Up: <strong id="score-up-stat" style="color:#26a69a;">--/-- (--%)</strong></div>
+          <div>Coverage: <strong id="score-coverage" style="color:#38bdf8;">-- of 78 bars</strong></div>
+        </div>
+
+        <div class="policy-note">
+          <strong>Test Policy</strong>: One-day test is a demonstration, not statistical proof.
+        </div>
+      </div>
+
+      <!-- Overall Research Holdout Card -->
+      <div class="scoreboard-section" id="confidence-tiers-card" style="margin-top: 14px;">
+        <div class="section-title-row">
+          <h3>Overall (Research Holdout)</h3>
+          <span class="badge badge-secondary">126 SESSIONS</span>
+        </div>
+        
+        <div class="score-main-metric">
+          <div class="score-headline">
+            Holdout accuracy = <strong id="score-holdout-acc">53.9%</strong>
+            <span class="score-ci" id="score-holdout-ci">[52.9%, 54.9%]</span>
+          </div>
+          <div class="score-subtext" id="score-holdout-subtext">5,108 correct of 9,472 labelled bars (Holdout 2026-05-18 to 2026-11-13)</div>
+        </div>
+
+        <div class="score-breakdown-row" style="font-size: 11px;">
+          <div>WEAK: <strong id="score-tier-weak">49.4%</strong> (n=2,689)</div>
+          <div>NORMAL: <strong id="score-tier-normal">54.7%</strong> (n=5,065)</div>
+          <div>STRONG: <strong id="score-tier-strong" style="color:#f59e0b;">62.7%</strong> (n=1,718)</div>
+        </div>
+
+        <div class="policy-note">
+          Holdout was inspected during model selection; descriptive summary.
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    <div>Educational project. Paper trading only. Not financial advice.</div>
+    <div style="color:#8b95a8; font-size:11px;">One-day test is a demonstration, not statistical proof.</div>
+    <div id="footer-time">ET: --:--:-- | IST: --:--:--</div>
+  </footer>
+
+  <script src="app_m5.js"></script>
+</body>
+</html>

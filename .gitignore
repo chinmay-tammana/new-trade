@@ -41,3 +41,11 @@ ehthumbs.db
 .idea/
 *.swp
 *~
+
+# Logs and test artifacts
+*.log
+results/logs/*.log
+playwright-report/
+test-results/
+results/figures/ui_*.png
+

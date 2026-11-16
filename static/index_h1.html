@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GS AI Trading Indicator — Live Production Engine</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Vendored Lightweight Charts without external runtime requests -->
+  <script src="vendor/lightweight-charts.standalone.production.js"></script>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="ticker-badge">GS</span>
+      <h1>AI Directional Indicator (1h)</h1>
+      <span class="badge badge-info" id="badge-feed-signals">SIGNALS: SIP (15-min delayed)</span>
+      <span class="badge badge-secondary" id="badge-feed-price" style="margin-left: 6px; background: rgba(100, 116, 139, 0.2); border: 1px solid #475569; color: #94a3b8;">PRICE: IEX live (display only)</span>
+    </div>
+
+    <!-- Live Dual Clocks (ET and IST) -->
+    <div class="header-clocks">
+      <span id="clock-et" class="clock-display">ET: --:--:-- EST</span>
+      <span class="clock-sep">|</span>
+      <span id="clock-ist" class="clock-display">IST: --:--:-- IST</span>
+    </div>
+
+    <div class="badges-bar">
+      <span class="badge" id="badge-market">MARKET ...</span>
+      <span class="badge" id="badge-signals">SIGNALS ...</span>
+      <button class="btn-link" id="btn-parity-why" title="Click to view parity gate status" style="display:none;">[Why?]</button>
+      <span class="badge" id="badge-model">MODEL: ...</span>
+      <span class="badge badge-replay" id="badge-replay" style="display:none;">REPLAY MODE</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- Left Column: Chart and Full-Width Inline Signals Log Directly Below Chart -->
+    <section id="chart-panel">
+      <!-- Replay & Chart Controls Toolbar -->
+      <div class="replay-toolbar" id="replay-toolbar">
+        <div class="replay-controls">
+          <label for="replay-date-select"><strong>Historical Replay:</strong></label>
+          <select id="replay-date-select" class="control-select">
+            <option value="2026-11-13">2026-11-13 (Last Completed Session)</option>
+            <option value="2026-11-12">2026-11-12 (Recent Out-of-Sample)</option>
+            <option value="2026-11-11">2026-11-11 (Recent Out-of-Sample)</option>
+            <option value="2026-11-10">2026-11-10 (Recent Out-of-Sample)</option>
+            <option value="2026-11-06">2026-11-06 (Replay Benchmark)</option>
+            <option value="2026-11-05">2026-11-05 (Election Volatility Session)</option>
+            <option value="2024-11-29">2024-11-29 (Black Friday Half-Day)</option>
+          </select>
+          <button id="btn-run-replay" class="btn btn-primary">Replay Day</button>
+          <label for="replay-speed" style="margin-left: 8px;">Speed:</label>
+          <select id="replay-speed" class="control-select">
+            <option value="instant">Instant</option>
+            <option value="1">1x (Slow)</option>
+            <option value="3">3x (Medium)</option>
+            <option value="10">10x (Fast)</option>
+          </select>
+          <button id="btn-reset-live" class="btn btn-secondary" style="display:none;">Back to Live</button>
+          <button id="btn-toggle-labels" class="btn btn-secondary" style="margin-left:8px;">Labels: OFF</button>
+        </div>
+        <div id="chart-legend" class="chart-legend-text">Band [q=0.10, 0.90]</div>
+      </div>
+
+      <div class="chart-header">
+        <div class="chart-title"><strong>Goldman Sachs (NYSE: GS)</strong> — Session-Anchored 1-Hour Candles (America/New_York)</div>
+        <div id="chart-status-label" class="chart-status-tag">● LIVE DATA THROUGH LAST SESSION</div>
+      </div>
+
+      <!-- TV Chart Container -->
+      <div id="tv-chart"></div>
+
+      <!-- Signals Log Panel (Full-Width Panel Directly Below Chart) -->
+      <div class="signals-log-panel" id="signals-log-panel">
+        <!-- Day Controls Bar -->
+        <div class="log-panel-header">
+          <div class="day-controls-bar">
+            <button id="btn-prev-day" class="btn btn-secondary btn-sm" title="Previous trading day">◀ Prev</button>
+            <input type="date" id="day-picker" class="control-input" title="Jump to date">
+            <button id="btn-next-day" class="btn btn-secondary btn-sm" title="Next trading day">Next ▶</button>
+            <button id="btn-latest-day" class="btn btn-secondary btn-sm">Latest session</button>
+            <button id="btn-today" class="btn btn-secondary btn-sm" style="display:none;">Today</button>
+          </div>
+
+          <!-- Horizon Tabs -->
+          <div class="horizon-tabs" id="horizon-tabs">
+            <button class="tab-btn active" data-horizon="1 hour">1 hour</button>
+            <button class="tab-btn" data-horizon="3 hours">3 hours</button>
+            <button class="tab-btn" data-horizon="Rest of day">Rest of day</button>
+          </div>
+
+          <!-- Minimal Filters -->
+          <div class="log-filters-bar">
+            <div class="filter-group">
+              <label for="filter-sample-select">View:</label>
+              <select id="filter-sample-select" class="control-select">
+                <option value="SCORED" selected>Scored (out-of-sample + live)</option>
+                <option value="ALL">All including in-sample</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label class="checkbox-label" for="filter-nosig-check" title="Toggle display of neutral/abstained hourly rows">
+                <input type="checkbox" id="filter-nosig-check" checked> Show No-signal rows
+              </label>
+            </div>
+            <div class="filter-group">
+              <label class="checkbox-label" for="filter-iex-check" title="Show legacy feature-shifted IEX rows for comparison">
+                <input type="checkbox" id="filter-iex-check"> Show IEX rows (not scored)
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Day Summary Strip Above Table -->
+        <div class="day-summary-strip" id="day-summary-strip">
+          <span class="summary-main" id="summary-main">Loading session summary...</span>
+          <span class="summary-sub" id="summary-sub">demonstration, not proof</span>
+        </div>
+
+        <!-- Hour Strip of Chips -->
+        <div class="hour-strip-container" id="hour-strip-container">
+          <!-- Dynamically populated chips -->
+        </div>
+
+        <!-- Dedicated Scroll Region for Signals Table -->
+        <div class="signals-scroll-box" id="signals-scroll-box">
+          <table class="signal-table" id="signal-table">
+            <thead>
+              <tr>
+                <th style="width: 11%;">Hour predicted (ET)</th>
+                <th style="width: 15%;">Issued (ET | IST)</th>
+                <th style="width: 12%;">Call</th>
+                <th style="width: 8%;">Strength</th>
+                <th style="width: 16%;">Vol and band</th>
+                <th style="width: 19%;">Price move</th>
+                <th style="width: 9%;">Result</th>
+                <th style="width: 10%;">Source</th>
+              </tr>
+            </thead>
+            <tbody id="signals-tbody">
+              <tr><td colspan="8" class="state-message">Loading signals...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Toggle Bar for Model & Feed Diagnostics -->
+      <div class="diag-toggle-bar">
+        <button id="btn-toggle-diagnostics" class="btn btn-secondary">
+          <span id="diag-toggle-text">Show Model & Feed Diagnostics ▼</span>
+        </button>
+      </div>
+
+      <!-- Comprehensive Inline Diagnostics Panel (Collapsed by default) -->
+      <section class="diagnostics-panel" id="diagnostics-section" style="display:none;">
+        <div class="diag-header">
+          <div class="diag-title-wrap">
+            <h3>Model & Feed Diagnostics (V3.4 Audit)</h3>
+            <span class="badge badge-warning" id="diag-verdict-badge">VERDICT: FEED BIAS</span>
+          </div>
+          <div class="diag-subtitle">Pre-registered decision protocol findings for Nov 10–13 signals</div>
+        </div>
+
+        <!-- 4 Key Diagnostics Cards -->
+        <div class="diag-cards-grid">
+          <div class="diag-card">
+            <div class="diag-card-title">IEX vs. SIP Feed Parity</div>
+            <div class="diag-card-stat" style="color: #38bdf8;">79.2% Agreement</div>
+            <div class="diag-card-desc">
+              • <strong>SIP (Consolidated Tape)</strong>: 4 Down, <strong>2 Up</strong>, 18 No Signal (Two-sided)<br>
+              • <strong>IEX (Thin Feed)</strong>: 7 Down, <strong>0 Up</strong>, 17 No Signal (One-sided)<br>
+              <em>31.08% missing minutes on IEX depress volume features, driving p_cal downward.</em>
+            </div>
+          </div>
+
+          <div class="diag-card">
+            <div class="diag-card-title">Threshold Proximity</div>
+            <div class="diag-card-stat" style="color: #26a69a;">Max Distance: 0.0021</div>
+            <div class="diag-card-desc">
+              • Highest Nov 10-13 IEX p_cal was <strong>0.5611</strong> (0.0021 below q_hi = 0.5632)<br>
+              • 2 bars came within 0.02 of triggering an Up signal<br>
+              • 5 bars came within 0.02 of triggering a Down signal
+            </div>
+          </div>
+
+          <div class="diag-card">
+            <div class="diag-card-title">Nov 10–13 Market Facts</div>
+            <div class="diag-card-stat" style="color: #fbbf24;">11 Up / 13 Down</div>
+            <div class="diag-card-desc">
+              • GS 1h candle direction: 11 Up candles (45.8%), 13 Down candles (54.2%)<br>
+              • Daily moves: Nov 10 (-0.00%), Nov 11 (-0.07%), Nov 12 (-0.34%), Nov 13 (-0.71%)<br>
+              <em>Intraday moves were balanced; macro daily trend was negative.</em>
+            </div>
+          </div>
+
+          <div class="diag-card">
+            <div class="diag-card-title">Coverage Target</div>
+            <div class="diag-card-stat" style="color: #a78bfa;">~30% Target Coverage</div>
+            <div class="diag-card-desc">
+              • <strong>Frozen Calibrated Band</strong>: q_lo = 0.434, q_hi = 0.563<br>
+              • <strong>OOF Holdout Target</strong>: ~30% pooled coverage across trading sessions<br>
+              • <strong>Nov 10–13 (SIP Tape)</strong>: 2 Up, 4 Down, 18 No Signal (25.0% coverage)
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Down Drivers Table -->
+        <div class="diag-sub-section">
+          <h4>Top Down Drivers (XGBoost Native SHAP Contributions)</h4>
+          <table class="diag-table">
+            <thead>
+              <tr>
+                <th style="width: 8%;">Rank</th>
+                <th style="width: 25%;">Feature</th>
+                <th style="width: 15%;">Mean Contrib</th>
+                <th style="width: 14%;">Nov Avg Value</th>
+                <th style="width: 14%;">Base Pctile</th>
+                <th style="width: 24%;">Mechanism</th>
+              </tr>
+            </thead>
+            <tbody id="diag-shap-tbody">
+              <tr>
+                <td>1</td>
+                <td><code>signed_volume_ratio</code></td>
+                <td style="color: #ef5350; font-weight:600;">-0.0286</td>
+                <td>0.2735</td>
+                <td>89.1%</td>
+                <td>Skewed by 1.32 Base stds on IEX due to thin exchange volume</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td><code>rvol</code></td>
+                <td style="color: #ef5350; font-weight:600;">-0.0177</td>
+                <td>0.7180</td>
+                <td>35.3%</td>
+                <td>Lower relative volume during midday sessions</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td><code>vol_20</code></td>
+                <td style="color: #ef5350; font-weight:600;">-0.0059</td>
+                <td>0.0079</td>
+                <td>77.5%</td>
+                <td>Elevated historical 20-bar volatility</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td><code>ret_20d</code></td>
+                <td style="color: #ef5350; font-weight:600;">-0.0036</td>
+                <td>+0.0285</td>
+                <td>55.1%</td>
+                <td>Multi-week trend following</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td><code>dist_prev_high</code></td>
+                <td style="color: #ef5350; font-weight:600;">-0.0020</td>
+                <td>-0.8976</td>
+                <td>56.0%</td>
+                <td>Distance from prior session swing high</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Swap Test Section (Restoration of Two-Sided Signals) -->
+        <div class="diag-sub-section">
+          <h4>Feed Feature-Group Swap Test (Nov 10–13, 24 Candidate Bars)</h4>
+          <div style="font-size:11px; color:#94a3b8; margin-bottom:8px;">
+            Testing causal attribution by replacing single IEX feature groups with consolidated SIP tape values:
+          </div>
+          <table class="diag-table">
+            <thead>
+              <tr>
+                <th style="width: 25%;">Configuration</th>
+                <th style="width: 20%;">Swapped Group</th>
+                <th style="width: 15%;">Features Swapped</th>
+                <th style="width: 12%;">Up Signals</th>
+                <th style="width: 12%;">Down Signals</th>
+                <th style="width: 16%;">Restores Two-Sided?</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Baseline Pure IEX</strong></td>
+                <td>None (Thin IEX)</td>
+                <td>0</td>
+                <td>0</td>
+                <td style="color:#ef5350;">7</td>
+                <td><span class="badge badge-warning">No (One-Sided)</span></td>
+              </tr>
+              <tr style="background: rgba(38, 166, 154, 0.08);">
+                <td><strong>IEX + SIP Volume</strong></td>
+                <td><strong>volume</strong></td>
+                <td>2</td>
+                <td style="color:#26a69a; font-weight:600;">2</td>
+                <td style="color:#ef5350; font-weight:600;">5</td>
+                <td><strong style="color:#26a69a;">YES (Two-Sided Restored!)</strong></td>
+              </tr>
+              <tr>
+                <td>IEX + SIP Intrabar</td>
+                <td>intrabar</td>
+                <td>4</td>
+                <td>0</td>
+                <td>6</td>
+                <td><span class="badge badge-warning">No</span></td>
+              </tr>
+              <tr>
+                <td>IEX + SIP Peers / VIXY</td>
+                <td>peers_vixy</td>
+                <td>3</td>
+                <td>0</td>
+                <td>7</td>
+                <td><span class="badge badge-warning">No</span></td>
+              </tr>
+              <tr>
+                <td>IEX + SIP Momentum / Trend</td>
+                <td>momentum_trend</td>
+                <td>7</td>
+                <td>0</td>
+                <td>7</td>
+                <td><span class="badge badge-warning">No</span></td>
+              </tr>
+              <tr style="background: rgba(56, 189, 248, 0.08);">
+                <td><strong>Baseline Pure SIP</strong></td>
+                <td><strong>All (Consolidated)</strong></td>
+                <td>51</td>
+                <td style="color:#26a69a; font-weight:600;">2</td>
+                <td style="color:#ef5350; font-weight:600;">4</td>
+                <td><strong style="color:#38bdf8;">YES (Reference SIP)</strong></td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="font-size:11px; color:#8b95a8; margin-top:6px;">
+            <em>Conclusion</em>: Swapping <strong>only the 2 volume features</strong> (rvol and signed_volume_ratio) to SIP restores the Up signals. IEX signals are shown for transparency only.
+          </div>
+        </div>
+
+        <!-- 7 vs 8 Explanation Box -->
+        <div class="diag-sub-section" style="background: rgba(15, 23, 42, 0.5); padding: 12px; border: 1px solid #334155; border-radius: 6px; margin-top: 14px;">
+          <h4 style="margin-top:0;">Audit: Explanation of the 7 vs. 8 Down Signals on IEX</h4>
+          <p style="font-size:12px; line-height:1.5; color:#cbd5e1; margin-bottom:4px;">
+            Bar <code>2026-11-12T10:30:00-05:00</code> was classified as <strong>Down</strong> in the initial live DB backfill (P(Up) = 0.3892 ≤ 0.4343) but as <strong>No Signal</strong> in the offline pure IEX diagnostic (P(Up) = 0.4822).
+          </p>
+          <p style="font-size:12px; line-height:1.5; color:#94a3b8; margin:0;">
+            <strong>Root Cause</strong>: The initial live database backfill computed trailing 20-day volume statistics crossing the freeze date (Nov 9). Comparing 18,000 IEX live volume against 500,000 historical SIP volume collapsed <code>rvol</code> by 40× to 0.036, which tripped XGBoost's low-volume bearish split. When volume history is homogeneous (either pure IEX or pure SIP), <code>rvol</code> is ~1.00, keeping this bar neutral (No Signal).
+          </p>
+        </div>
+
+        <!-- Diagnostic Plots Inline Visuals -->
+        <div class="diag-plots-grid">
+          <div class="diag-plot-box">
+            <h5>p_cal Time Series & Decision Corridors (Nov 10–13)</h5>
+            <img src="/figures/balance_diag_pcal_series.png" class="diag-plot-img" alt="p_cal Time Series">
+          </div>
+          <div class="diag-plot-box">
+            <h5>p_cal Empirical Density Comparison Across Eras</h5>
+            <img src="/figures/balance_diag_distribution_hist.png" class="diag-plot-img" alt="Distribution Histogram">
+          </div>
+        </div>
+      </section>
+
+
+    </section>
+
+    <!-- Right Column: Sidebar with Hero Card and Scorecards (Cleanly Scrolled to Top) -->
+    <aside id="side-panel">
+      <!-- Warning Banners Container -->
+      <div id="banner-container"></div>
+
+      <!-- Hero Direction Card (Readable in 1 Second) -->
+      <div class="hero-card" id="hero-card">
+        <div class="hero-top-row">
+          <span class="sample-tag" id="hero-sample-tag">OUT-OF-SAMPLE</span>
+          <span class="outcome-pill" id="hero-outcome-pill" style="display:none;"></span>
+        </div>
+
+        <div class="direction-huge direction-none" id="hero-direction">
+          <span id="hero-arrow">•</span> <span id="hero-word">NO SIGNAL</span>
+        </div>
+
+        <div class="hero-strong-row" id="hero-strong-row" style="display:none;">
+          <span class="strong-pill">STRONG TIER (Conviction ≥ 52.0%)</span>
+        </div>
+
+        <div class="hero-meta" id="hero-meta">
+          <div class="hero-headline-delivery" id="hero-headline-delivery" style="color: #38bdf8; font-weight: 500; font-size: 11px; margin-bottom: 4px; line-height: 1.3;">Signal for the hour starting 10:30 ET. Bar closed 10:30, delivered 10:46 ET. This hour is already 16 min old.</div>
+          <div id="hero-conf-wrap"><strong id="hero-conf">--%</strong> <span id="hero-hour-window">covers --:-- to --:-- ET</span></div>
+          <div class="hero-threshold-subtext" id="hero-threshold-subtext">P(Up) --%: needs ≥ 56.3% for Up, ≤ 43.4% for Down</div>
+        </div>
+
+        <div class="hero-reason" id="hero-reason">Awaiting next session close</div>
+
+        <!-- Plain English Guidance Sentence -->
+        <div class="hero-sentence" id="hero-sentence">
+          Model awaiting next closed candle. Single signals are weak evidence.
+        </div>
+      </div>
+
+
+
+      <!-- Quick Metrics Grid -->
+      <div class="metrics-grid">
+        <div class="metric-box">
+          <div class="metric-label">Volatility Class</div>
+          <div class="metric-value" id="val-vol">--</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Market Regime</div>
+          <div class="metric-value" id="val-regime">--</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label" id="lbl-countdown">Next Session Open</div>
+          <div class="metric-value" id="val-countdown" style="color:#f59e0b;">--</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Hist. Hour Hit Rate</div>
+          <div class="metric-value" id="val-hist-hit">--%</div>
+        </div>
+      </div>
+
+
+
+      <!-- Return Bands Metric -->
+      <div class="bands-box">
+        <span class="metric-label">Return Bands (10% - 90%):</span>
+        <span id="val-bands" style="font-family: var(--font-mono); font-size: 11px; color: var(--text-main);">
+          Low: -- bps | High: -- bps
+        </span>
+      </div>
+
+      <!-- Signal Balance Card (V3.4 Diagnostic Monitoring) -->
+      <div class="balance-card" id="balance-card">
+        <div class="section-title-row">
+          <h3>Signal Balance</h3>
+          <span class="badge badge-info" id="badge-balance-mode">OOS + LIVE</span>
+        </div>
+
+        <!-- Diagnostic Alert Banner if >= 6 consecutive directional signals on one side -->
+        <div class="balance-alert" id="balance-alert" style="display:none;">
+          <strong>Diagnostic Alert:</strong> All recent signals are on one side. This can reflect a real trend, the data feed or the model's trend-following; <a href="#diagnostics-section" class="diag-link">see Diagnostics</a>.
+        </div>
+
+        <div class="balance-grid">
+          <div class="balance-item">
+            <div class="bal-label">Last 1 Session (Nov 13)</div>
+            <div class="bal-val" id="bal-1d">Up: 0 | Down: 1 | No-Sig: 5</div>
+          </div>
+          <div class="balance-item">
+            <div class="bal-label">Last 4 Sessions (Nov 10-13)</div>
+            <div class="bal-val" id="bal-4d">Up: 0 | Down: 7 | No-Sig: 17</div>
+          </div>
+          <div class="balance-item">
+            <div class="bal-label">Last 20 Sessions</div>
+            <div class="bal-val" id="bal-20d">Up: 0 | Down: 7 | No-Sig: 17</div>
+          </div>
+        </div>
+      </div>
+
+
+
+      <!-- Out-of-Sample Scorecard Card -->
+      <div class="scoreboard-section" id="scorecard-section">
+        <div class="section-title-row">
+          <h3 id="scoreboard-title">OUT-OF-SAMPLE (descriptive only, small n)</h3>
+          <span class="badge badge-info">OUT-OF-SAMPLE</span>
+        </div>
+        
+        <div class="score-main-metric">
+          <div class="score-headline">
+            Signal accuracy = <strong id="score-hit-rate">62.5%</strong>
+            <span id="score-wilson-ci" class="score-ci">[30.6%, 86.3%]</span>
+          </div>
+          <div class="score-subtext" id="score-formula-text">Signal accuracy = hits / directional signals (n=8)</div>
+        </div>
+
+        <div class="score-breakdown-row">
+          <div>Down: <strong id="score-down-stat" style="color:#ef5350;">5/8 (62.5%)</strong></div>
+          <div>Up: <strong id="score-up-stat" style="color:#26a69a;">0/0 (n/a)</strong></div>
+          <div>Coverage: <strong id="score-coverage" style="color:#38bdf8;">8 of 24</strong></div>
+        </div>
+
+        <div class="score-secondary-metric">
+          Hits per candle incl. abstentions (not accuracy): <span id="score-all-candles">20.8% (5/24)</span>
+        </div>
+
+        <div class="policy-note">
+          <strong>Test Policy</strong>: A one-day test is a demonstration of execution mechanics, not statistical proof.
+        </div>
+
+        <div class="score-audit-note" style="margin-top: 8px; font-size: 11px; color: #94a3b8; line-height: 1.3;">
+          <em>Note: Earlier 5 of 8 result came from IEX signals and is not scored. Evaluated exclusively on consolidated SIP delayed tape.</em>
+        </div>
+
+        <div class="stat-notice-box" id="stat-notice-box" style="margin-top: 12px; padding: 10px; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 6px; font-size: 11px; line-height: 1.4; color: var(--text-muted);">
+          <strong>Statistical Notice</strong>: The 52.25% accuracy [49.65, 54.84] and permutation p = 0.0417 were measured on the pre-refit model with thresholds 0.490 / 0.508 (88.65% coverage). The deployed rule uses thresholds 0.434 / 0.563 (about 30% target coverage) and has no held-out accuracy measurement. Never risk capital on a single candle.
+        </div>
+      </div>
+
+
+    </aside>
+  </main>
+
+  <!-- Parity Gates 'Why?' Modal -->
+  <div class="modal-overlay" id="parity-modal" style="display:none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Live Feed Parity Gate Evaluation</h3>
+        <button class="btn-close" id="btn-close-parity">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Before live execution signals are enabled on real capital or production feeds, the incoming feed (IEX) is audited against consolidated tape (SIP) across 60 days (420 bars):</p>
+        <table class="parity-table">
+          <thead>
+            <tr>
+              <th>Gate</th>
+              <th>Description</th>
+              <th>Threshold</th>
+              <th>Measured Value</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Gate A</strong></td>
+              <td>Directional Agreement</td>
+              <td>≥ 85.0%</td>
+              <td><strong>97.44%</strong></td>
+              <td><span class="badge badge-live">PASSED</span></td>
+            </tr>
+            <tr>
+              <td><strong>Gate B</strong></td>
+              <td>Three-Class Agreement</td>
+              <td>≥ 75.0%</td>
+              <td><strong>72.14%</strong></td>
+              <td><span class="badge badge-warning">FAILED</span></td>
+            </tr>
+            <tr>
+              <td><strong>Gate C</strong></td>
+              <td>GS Missing Minutes</td>
+              <td>≤ 5.0%</td>
+              <td><strong>31.08%</strong></td>
+              <td><span class="badge badge-warning">FAILED</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="modal-disclosure">
+          <strong>Mandatory Disclosure</strong>: Because IEX captures only ~2% of total tape volume, thin minutes alter microstructure signals. Signals shown on the chart were computed after the fact and are <strong>display-only until the gates pass</strong>.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>Educational project. Paper trading only. Not financial advice.</div>
+    <div style="color:#8b95a8; font-size:11px;">One-day test is a demonstration, not statistical proof.</div>
+    <div id="footer-time">ET: --:--:-- | IST: --:--:--</div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
